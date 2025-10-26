@@ -62,10 +62,11 @@
     VAULT_ADDR: "{{ vault.url }}"
     VAULT_TOKEN: "{{ vault.root_token }}"
   register: vault_result
-  retries: "{{ network.env.retry_count }}"
+  retries: "{{ network.env.retry_count}}"
   delay: 30
-  until: (vault_result.rc | default(1)) == 0
+  until: vault_result.failed == False
   when: check == "crypto_materials"
+  register: vault_retry_result
 
 # Output debug message if vault operation fails after retries
 - name: Debug information for vault failure
@@ -80,7 +81,7 @@
       Verify Vault status with 'vault status' and check that the crypto generation process completed successfully.
   when:
     - check == "crypto_materials"
-    - vault_result is defined and vault_result.failed
+    - vault_retry_result.failed is defined and vault_retry_result.failed
   
 # Log success message when crypto materials are found
 - name: Log successful crypto materials check
