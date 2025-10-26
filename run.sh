@@ -18,7 +18,7 @@ export KUBECONFIG="${KUBECONFIG_TARGET}"
 
 # --- Configuration: change if your minikube proxy port differs ---
 # Use the proxy port shown by `kubectl cluster-info` on the host (example: 56855)
-MINIKUBE_PROXY_PORT="${MINIKUBE_PROXY_PORT:-56855}"
+MINIKUBE_PROXY_PORT="${MINIKUBE_PROXY_PORT:-49875}"
 # The hostname we want to use inside the container (matches Minikube certificate SAN)
 MINIKUBE_HOSTNAME="${MINIKUBE_HOSTNAME:-minikube}"
 
