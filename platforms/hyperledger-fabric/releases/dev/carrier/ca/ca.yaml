@@ -26,7 +26,7 @@ spec:
       vault:
         type: hashicorp
         network: fabric
-        address: http://192.168.1.27:8200
+        address: http://minikube:8200
         authPath: localcarrier
         secretEngine: secretsv2
         secretPrefix: "data/localcarrier"
