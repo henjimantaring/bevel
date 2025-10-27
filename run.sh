@@ -68,5 +68,5 @@ ajv validate -s /home/bevel/platforms/network-schema.json -d /home/bevel/build/n
 
 echo "Running the playbook..."
 # ensure ansible uses the KUBECONFIG environment
-exec env KUBECONFIG="${KUBECONFIG_TARGET}" ansible-playbook -vvv /home/bevel/platforms/shared/configuration/site.yaml \
+exec env KUBECONFIG="${KUBECONFIG_TARGET}" ansible-playbook -vvvv /home/bevel/platforms/shared/configuration/site.yaml \
   --inventory-file=/home/bevel/platforms/shared/inventory/ -e "@/home/bevel/build/network.yaml" -e 'ansible_python_interpreter=/usr/bin/python3'
