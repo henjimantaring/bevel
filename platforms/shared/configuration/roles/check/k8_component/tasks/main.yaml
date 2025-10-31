@@ -39,7 +39,7 @@
   register: component_data
   retries: "{{ network.env.retry_count }}"
   delay: 35
-  until: component_data.resources|length > 0
+  until: (component_data.resources | default([])) | length > 0
   when: 
     - component_type == "Namespace" or component_type == "ClusterRoleBinding" or component_type == "StorageClass"
     - type is undefined or type == "retry"
@@ -97,7 +97,7 @@
   register: component_data
   retries: "{{ network.env.retry_count }}"
   delay: 35
-  until: component_data.resources|length > 0
+  until: (component_data.resources | default([])) | length > 0
   when: (component_type == "ServiceAccount" and (type is undefined or type == 'retry'))
   register: sa_retry_result
 
