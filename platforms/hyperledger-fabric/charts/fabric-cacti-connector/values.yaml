@@ -10,7 +10,7 @@ image:
   # Docker image of the API server
   repository: ghcr.io/hyperledger/cactus-cmd-api-server:1.1.3
   # Docker image of the alpine utils
-  alpineUtils: ghcr.io/hyperledger/bevel-alpine:arm64
+  alpineUtils: ghcr.io/henjimantaring/bevel-alpine:arm64
   # Pull policy of the docker image
   pullPolicy: IfNotPresent
 

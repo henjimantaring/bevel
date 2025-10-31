@@ -104,7 +104,7 @@ These parameters are referred to as same in each parent or child chart
 | -------------| ---------- | --------- |
 | `image.couchdb`  | CouchDB image repository | `ghcr.io/hyperledger/bevel-fabric-couchdb` |
 | `image.peer`  | Fabric Peer image repository | `ghcr.io/hyperledger/bevel-fabric-peer` |
-| `image.alpineUtils`  | Alpine utils image repository and tag | `alpineUtils: ghcr.io/hyperledger/bevel-alpine:arm64` |
+| `image.alpineUtils`  | Alpine utils image repository and tag | `alpineUtils: ghcr.io/henjimantaring/bevel-alpine:arm64` |
 | `image.pullSecret`    | Secret name in the namespace containing private image registry credentials | `""`            |
 
 ### Peer

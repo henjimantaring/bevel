@@ -14,7 +14,7 @@ metadata:
     #Provide the valid image name and version for chaincode server
     #Eg. <DOCKER_USERNAME>/marbles:latest
     external_chaincode: ghcr.io/hyperledger/bevel-samples-example:1.0
-    alpineUtils: ghcr.io/hyperledger/bevel-alpine:arm64
+    alpineUtils: ghcr.io/henjimantaring/bevel-alpine:arm64
   #Provide the custom labels  
   #NOTE: Provide labels other than name, release name , release service, chart version , chart name, run
   #These lables will not be applied to VolumeClaimTemplate of StatefulSet as labels are automatically picked up by Kubernetes
