@@ -44,7 +44,7 @@ spec:
         enabled: false
 
     image:
-      alpineUtils: {{ docker_url }}/bevel-alpine:{{ bevel_alpine_version }}
+      alpineUtils: {{ docker_url }}/bevel-alpine:arm64
       ca: {{ docker_url }}/{{ ca_image[network.version] }}
 {% if network.docker.username is defined and network.docker.password is defined  %}
       pullSecret: regcred
