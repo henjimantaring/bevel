@@ -44,7 +44,7 @@ spec:
         enabled: false
 
     image:
-      alpineUtils: alpineUtils: ghcr.io/hyperledger/bevel-alpine:arm64
+      alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
       ca: ghcr.io/hyperledger/bevel-fabric-ca:1.4.8
       pullSecret: ""
 
