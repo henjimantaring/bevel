@@ -40,7 +40,7 @@ global:
 image:
   #Provide the valid image name and version to read certificates from vault server
   #Eg.repository: ghcr.io/hyperledger/bevel-alpine
-  repository: ghcr.io/hyperledger/bevel-alpine
+  repository: ghcr.io/henjimantaring/bevel-alpine
   tag: arm64
   #Provide the pullSecret for vault
   #Eg. pullSecret: regcred
