@@ -33,5 +33,5 @@ spec:
         tls:
     image:
       repository: ghcr.io/hyperledger/bevel-alpine
-      tag: latest
+      tag: arm64
       pullSecret: "regcred"
