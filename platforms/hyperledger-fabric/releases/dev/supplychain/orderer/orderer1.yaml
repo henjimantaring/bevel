@@ -62,7 +62,7 @@ spec:
 
     image:
       orderer: ghcr.io/hyperledger/bevel-fabric-orderer
-      alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
+      alpineUtils: alpineUtils: ghcr.io/hyperledger/bevel-alpine:arm64
       pullSecret: ""
 
     orderer:
