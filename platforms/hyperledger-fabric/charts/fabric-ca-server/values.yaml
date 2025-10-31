@@ -59,8 +59,8 @@ storage:
 
 image:
   #Provide the valid image name and version to read certificates from vault server
-  #Eg.alpineutils: ghcr.io/hyperledger/bevel-alpine:latest
-  alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
+  #Eg.alpineUtils: ghcr.io/hyperledger/bevel-alpine:arm64
+  alpineUtils: ghcr.io/hyperledger/bevel-alpine:arm64
   #Provide the valid image name and version for fabric ca
   #Eg. ca: ghcr.io/hyperledger/bevel-fabric-ca:latest
   ca: ghcr.io/hyperledger/bevel-fabric-ca:latest

@@ -14,7 +14,7 @@ metadata:
     fabrictools: ghcr.io/hyperledger/bevel-fabric-tools:1.4.8
     #Provide the valid image name and version to read certificates from vault server
     #Eg. alpineutils: gcr.io/acn-stp-on-blockchain/alpine-utils
-    alpineutils: ghcr.io/hyperledger/bevel-alpine:latest
+    alpineUtils: ghcr.io/hyperledger/bevel-alpine:arm64
   #Provide the custom labels
   #NOTE: Provide labels other than name, release name , release service, chart version , chart name , app.
   #Eg. labels:

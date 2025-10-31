@@ -115,8 +115,8 @@ image:
   #Eg. peer: hyperledger/fabric-peer
   peer: ghcr.io/hyperledger/bevel-fabric-peer
   #Provide the valid image name and version to read certificates from vault server 
-  #Eg. alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
-  alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
+  #Eg. alpineUtils: ghcr.io/hyperledger/bevel-alpine:arm64
+  alpineUtils: ghcr.io/hyperledger/bevel-alpine:arm64
   #Provide the secret to use if private repository
   #Eg. pullSecret: regcred
   pullSecret:
