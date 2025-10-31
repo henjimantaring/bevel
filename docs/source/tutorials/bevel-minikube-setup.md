@@ -133,7 +133,7 @@ You can also setup minikube on a Ubuntu VM.
 1. Update Docker configurations:
     ```yaml
     docker:
-        url: "ghcr.io/hyperledger"
+        url: "ghcr.io/henjimantaring"
         # Comment username and password as it is public repo
         #username: "<your docker username>"
         #password: "<your docker password/token>"
