@@ -175,13 +175,13 @@ spec:
               echo "Creating or updating Vault auth role..."
 
 
-              cat > payload.json <<'EOF'
+              cat > payload.json <<EOF
               {
-              "bound_service_account_names": "'""${VAULT_SA}""'",
-              "bound_service_account_namespaces": "'""${NAMESPACE}""'",
-              "policies": ["'""${POLICY_NAME}""'"],
-              "ttl": "1200s",
-              "alias_name_source": "serviceaccount_name"
+                "bound_service_account_names": "${VAULT_SA}",
+                "bound_service_account_namespaces": "${NAMESPACE}",
+                "policies": ["${POLICY_NAME}"],
+                "ttl": "1200s",
+                "alias_name_source": "serviceaccount_name"
               }
               EOF
 
