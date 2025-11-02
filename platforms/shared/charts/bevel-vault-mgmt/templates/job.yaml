@@ -171,35 +171,31 @@ spec:
                 validateVaultResponse ${response_status};
               fi;
 
-              if [ "$vault_auth_check" == 'null' ]; then
-                echo "Need vault auth role"
+              # ALWAYS create/update the role (moved out of the "authPath == null" block)
+              echo "Creating or updating Vault auth role..."
+
 
               cat > payload.json <<'EOF'
               {
-                "bound_service_account_names": "'"${VAULT_SA}"'",
-                "bound_service_account_namespaces": "'"${NAMESPACE}"'",
-                "policies": ["'"${POLICY_NAME}"'"],
-                "ttl": "1200s",
-                "alias_name_source": "serviceaccount_name"
+              "bound_service_account_names": "'""${VAULT_SA}""'",
+              "bound_service_account_namespaces": "'""${NAMESPACE}""'",
+              "policies": ["'""${POLICY_NAME}""'"],
+              "ttl": "1200s",
+              "alias_name_source": "serviceaccount_name"
               }
               EOF
 
-                curl \
-                -s -o /dev/null -w "%{http_code}" \
-                --header "X-Vault-Token: $ROOT_TOKEN" \
-                --request POST \
-                --data @payload.json \
-                ${VAULT_ADDR}/v1/auth/${KUBERNETES_AUTH_PATH}/role/${VAULT_ROLE}
 
-                # Check role
-                response_status=$(curl -s -o /dev/null -w "%{http_code}" \
-                --header "X-Vault-Token: $ROOT_TOKEN" \
-                ${VAULT_ADDR}/v1/auth/${KUBERNETES_AUTH_PATH}/role/${VAULT_ROLE});
+              # create/update role
+              response_status=$(curl -s -o /dev/null -w "%{http_code}" \
+              --header "X-Vault-Token: $ROOT_TOKEN" \
+              --request POST \
+              --data @payload.json \
+              ${VAULT_ADDR}/v1/auth/${KUBERNETES_AUTH_PATH}/role/${VAULT_ROLE})
 
-                rm payload.json
-            
-                validateVaultResponse ${response_status};
-              fi;
+              rm payload.json
+
+              validateVaultResponse ${response_status};
           volumeMounts:
           {{ if .Values.global.vault.tls  }}
             - name: vaultca
