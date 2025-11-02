@@ -22,11 +22,11 @@ spec:
       cluster:
         provider: minikube
         cloudNativeServices: false
-        kubernetesUrl: https://minikube:62151
+        kubernetesUrl: https://minikube:61512
       vault:
         type: hashicorp
         network: fabric
-        address: http://192.168.254.113:8200
+        address: http://172.20.10.2:8200
         authPath: developmanufacturer
         secretEngine: secret
         secretPrefix: "data/developmanufacturer"
