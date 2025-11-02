@@ -178,12 +178,15 @@ spec:
                 \"bound_service_account_namespaces\": \"${NAMESPACE}\", \
                 \"policies\": [\"${POLICY_NAME}\"], \"ttl\": \"1200s\"}" > payload.json
 
-                curl \
-                -s -o /dev/null -w "%{http_code}" \
-                --header "X-Vault-Token: $ROOT_TOKEN" \
-                --request POST \
-                --data @payload.json \
-                ${VAULT_ADDR}/v1/auth/${KUBERNETES_AUTH_PATH}/role/${VAULT_ROLE}
+              cat > payload.json <<'EOF'
+              {
+                "bound_service_account_names": "'"${VAULT_SA}"'",
+                "bound_service_account_namespaces": "'"${NAMESPACE}"'",
+                "policies": ["'"${POLICY_NAME}"'"],
+                "ttl": "1200s",
+                "alias_name_source": "serviceaccount_name"
+              }
+              EOF
 
                 # Check role
                 response_status=$(curl -s -o /dev/null -w "%{http_code}" \
