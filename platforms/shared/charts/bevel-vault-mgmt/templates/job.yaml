@@ -185,6 +185,8 @@ spec:
               }
               EOF
 
+              echo "payload:"
+              sed -n '1,120p' payload.json
 
               # create/update role
               response_status=$(curl -s -o /dev/null -w "%{http_code}" \
