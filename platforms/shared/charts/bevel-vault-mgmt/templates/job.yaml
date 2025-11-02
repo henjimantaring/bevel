@@ -174,10 +174,6 @@ spec:
               if [ "$vault_auth_check" == 'null' ]; then
                 echo "Need vault auth role"
 
-                echo " {\"bound_service_account_names\": \"${VAULT_SA}\", \
-                \"bound_service_account_namespaces\": \"${NAMESPACE}\", \
-                \"policies\": [\"${POLICY_NAME}\"], \"ttl\": \"1200s\"}" > payload.json
-
               cat > payload.json <<'EOF'
               {
                 "bound_service_account_names": "'"${VAULT_SA}"'",
@@ -187,6 +183,13 @@ spec:
                 "alias_name_source": "serviceaccount_name"
               }
               EOF
+
+                curl \
+                -s -o /dev/null -w "%{http_code}" \
+                --header "X-Vault-Token: $ROOT_TOKEN" \
+                --request POST \
+                --data @payload.json \
+                ${VAULT_ADDR}/v1/auth/${KUBERNETES_AUTH_PATH}/role/${VAULT_ROLE}
 
                 # Check role
                 response_status=$(curl -s -o /dev/null -w "%{http_code}" \
