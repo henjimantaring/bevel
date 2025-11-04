@@ -45,15 +45,16 @@
 
 - name: Install flux cli and bootstrap flux v2
   shell: |
-    yes | {{ bin_install_dir }}/flux bootstrap git \
+    {{ bin_install_dir }}/flux bootstrap git \
     --url={{ git_url }} \
-    --components-extra=image-reflector-controller,image-automation-controller \
+    --components-extra="image-reflector-controller,image-automation-controller" \
     --branch={{ git_branch }} \
     --path={{ git_path }} \
     --private-key-file={{ git_key }} \
     --version=v{{ flux_version }} \
     --namespace=flux-{{ network.env.type }} \
-    --context={{ kubecontext }}
+    --context={{ kubecontext }} \
+    --yes
   when: git_protocol == "ssh"
   environment:
     KUBECONFIG: "{{ item.k8s.config_file }}"
