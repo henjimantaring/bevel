@@ -80,7 +80,7 @@ spec:
               secretKeyRef:
                 name: roottoken
                 key: token
-          command: ["sh", "-c", "-xv"]
+          command: ["sh", "-c"]
           args:
             - |-
               validateVaultResponse () {
@@ -171,33 +171,29 @@ spec:
                 validateVaultResponse ${response_status};
               fi;
 
-              # ALWAYS create/update the role (moved out of the "authPath == null" block)
-              echo "Creating or updating Vault auth role..."
+              if [ "$vault_auth_check" == 'null' ]; then
+                echo "Need vault auth role"
 
+                echo " {\"bound_service_account_names\": \"${VAULT_SA}\", \
+                \"bound_service_account_namespaces\": \"${NAMESPACE}\", \
+                \"policies\": [\"${POLICY_NAME}\"], \"ttl\": \"1200s\"}" > payload.json
 
-              cat > payload.json <<EOF
-              {
-                "bound_service_account_names": "${VAULT_SA}",
-                "bound_service_account_namespaces": "${NAMESPACE}",
-                "policies": ["${POLICY_NAME}"],
-                "ttl": "1200s",
-                "alias_name_source": "serviceaccount_name"
-              }
-              EOF
+                curl \
+                -s -o /dev/null -w "%{http_code}" \
+                --header "X-Vault-Token: $ROOT_TOKEN" \
+                --request POST \
+                --data @payload.json \
+                ${VAULT_ADDR}/v1/auth/${KUBERNETES_AUTH_PATH}/role/${VAULT_ROLE}
 
-              echo "payload:"
-              sed -n '1,120p' payload.json
+                # Check role
+                response_status=$(curl -s -o /dev/null -w "%{http_code}" \
+                --header "X-Vault-Token: $ROOT_TOKEN" \
+                ${VAULT_ADDR}/v1/auth/${KUBERNETES_AUTH_PATH}/role/${VAULT_ROLE});
 
-              # create/update role
-              response_status=$(curl -s -o /dev/null -w "%{http_code}" \
-              --header "X-Vault-Token: $ROOT_TOKEN" \
-              --request POST \
-              --data @payload.json \
-              ${VAULT_ADDR}/v1/auth/${KUBERNETES_AUTH_PATH}/role/${VAULT_ROLE})
-
-              rm payload.json
-
-              validateVaultResponse ${response_status};
+                rm payload.json
+            
+                validateVaultResponse ${response_status};
+              fi;
           volumeMounts:
           {{ if .Values.global.vault.tls  }}
             - name: vaultca
