@@ -43,6 +43,7 @@
     chart_ref: "{{ playbook_dir }}/../../../{{ charts_dir }}/{{ charts[type] }}"
     values_files:
       - "{{ values_dir }}/{{ component_name }}.yaml"
+    skip_crds: true
     force: true
     wait: true
     update_repo_cache: true
