@@ -46,7 +46,7 @@
     skip_crds: true
     force: true
     wait: true
-    update_repo_cache: true
+    #update_repo_cache: true
     kubeconfig: "{{ kubernetes.config_file }}"
   when:
     - helm_check.status is not defined
