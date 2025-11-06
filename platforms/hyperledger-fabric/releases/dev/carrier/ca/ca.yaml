@@ -26,7 +26,7 @@ spec:
       vault:
         type: hashicorp
         network: fabric
-        address: http://172.20.10.2:8200
+        address: http://192.168.254.113:8200
         authPath: developcarrier
         secretEngine: secretsv2
         secretPrefix: "data/developcarrier"
