@@ -18,8 +18,8 @@ global:
     externalUrlSuffix: {{ org.external_url_suffix }}
 
 image:
-  fabricTools: {{ docker_url }}/{{ charts.fabric_tools_image }}
-  alpineUtils: ghcr.io/henjimantaring/bevel-alpine:arm64
+  alpineUtils: {{ docker_url }}/bevel-alpine:arm64
+  fabricTools: {{ docker_url }}/{{ fabric_tools_image }}
 {% if network.docker.username is defined and network.docker.password is defined  %}
   pullSecret: regcred
 {% else %}
