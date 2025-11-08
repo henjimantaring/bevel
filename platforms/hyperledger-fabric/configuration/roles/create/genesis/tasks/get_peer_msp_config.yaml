@@ -1,21 +1,45 @@
-# Get config file from configmap
-- name: Get config file from config map 
+# Get config file from ConfigMap (do not fail even if not found)
+- name: "Get peer MSP ConfigMap"
   kubernetes.core.k8s_info:
     kubeconfig: "{{ org.k8s.config_file }}"
     kind: ConfigMap
     name: "{{ peer_name }}-msp-config"
     namespace: "{{ org_name }}-net"
   register: config_file_data
+  failed_when: false
 
-# Create the certs directory if it does not exist
-- name: Create the certs directory if it does not exist
+# Normalize the result to a list we can safely index
+- name: "Normalize k8s_info result"
+  set_fact:
+    cm_list: "{{ (config_file_data.resources | default([])) | list }}"
+
+# Optional: show what we actually found
+- name: "Debug: found ConfigMaps"
+  debug:
+    msg:
+      names: "{{ cm_list | map(attribute='metadata.name') | list }}"
+      count: "{{ cm_list | length }}"
+      raw: "{{ config_file_data | to_nice_json }}"
+
+# Fail early with a clear message if the ConfigMap is missing/empty
+- name: "Ensure ConfigMap exists"
+  assert:
+    that:
+      - cm_list | length > 0
+    fail_msg: >
+      ConfigMap '{{ peer_name }}-msp-config' not found in namespace '{{ org_name }}-net'.
+      resources={{ (config_file_data.resources | default([])) | to_nice_json }}
+
+# Create the target directory
+- name: "Create genesis files directory"
   file:
     path: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
     state: directory
 
-- name: Save config peer msp config locally for genesis
+# Save the first (and only) resource as pretty JSON
+- name: "Save peer MSP config locally for genesis"
   copy:
-    content: "{{ config_file_data.resources[0] | to_nice_json }}"
+    content: "{{ cm_list[0] | to_nice_json }}"
     dest: "{{ files_loc }}/{{ org_name }}-config-file.json"
   vars:
     files_loc: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
