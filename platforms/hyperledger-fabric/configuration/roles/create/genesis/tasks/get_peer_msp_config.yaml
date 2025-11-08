@@ -1,57 +1,77 @@
-# Get the MSP ConfigMap(s) for this peer in this org namespace
-- name: List MSP ConfigMaps in target namespace
+# Try to get the exact ConfigMap if peer_name is provided
+- name: Try exact ConfigMap name ({{ peer_name | default('peer0') }}-msp-config)
+  kubernetes.core.k8s_info:
+    kubeconfig: "{{ org.k8s.config_file }}"
+    kind: ConfigMap
+    name: "{{ (peer_name | default('peer0')) ~ '-msp-config' }}"
+    namespace: "{{ org_name }}-net"
+  register: exact_cm
+  failed_when: false
+
+# If exact not found, list all and filter by *-msp-config
+- name: List all ConfigMaps in namespace
   kubernetes.core.k8s_info:
     kubeconfig: "{{ org.k8s.config_file }}"
     kind: ConfigMap
     namespace: "{{ org_name }}-net"
-    label_selectors:
-      - "app.kubernetes.io/name={{ peer_name }}-msp-config"
-  register: cm_list
+  register: all_cms
+  when: (exact_cm.resources | default([])) | length == 0
 
-# Fallback: also try by exact name (in case labels differ)
-- name: Get MSP ConfigMap by exact name (fallback)
-  kubernetes.core.k8s_info:
-    kubeconfig: "{{ org.k8s.config_file }}"
-    kind: ConfigMap
-    name: "{{ peer_name }}-msp-config"
-    namespace: "{{ org_name }}-net"
-  register: cm_by_name
-
-- name: Choose the first found ConfigMap
+# Build the candidate list: either the exact hit or all matches ending with -msp-config
+- name: Build candidate list
   set_fact:
     cm_candidates: >-
-      {{ (cm_list.resources | default([])) + (cm_by_name.resources | default([])) }}
-    cm: "{{ (cm_candidates | list | unique | first) | default(None) }}"
+      {{
+        ( (exact_cm.resources | default([])) | length > 0 )
+        | ternary(
+            exact_cm.resources,
+            (all_cms.resources | default([]))
+              | selectattr('metadata.name','search','-msp-config$')
+              | list
+          )
+      }}
 
-# Helpful debug so you can see what was found
-- name: Debug found ConfigMaps
-  debug:
-    msg:
-      - "Looking for name={{ peer_name }}-msp-config in ns={{ org_name }}-net"
-      - "Found names: {{ (cm_candidates | map(attribute='metadata.name') | list) | default([]) }}"
-
-# Assert we actually found it
+# Assert we found at least one ConfigMap
 - name: Ensure ConfigMap exists
   assert:
     that:
-      - cm is not none
-      - cm.data is defined
-      - cm.data.mspConfig is defined
+      - cm_candidates | length > 0
     fail_msg: >-
-      ConfigMap '{{ peer_name }}-msp-config' not found or missing data.mspConfig
-      in namespace '{{ org_name }}-net'.
-      Candidates: {{ (cm_candidates | map(attribute='metadata.name') | list) | default([]) }}
+      ConfigMap '{{ (peer_name | default('peer0')) ~ "-msp-config" }}'
+      not found in namespace '{{ org_name }}-net'.
+      resources={{ (all_cms.resources | default([])) | map(attribute='metadata.name') | list }}
 
-# Create the output directory
+# Choose the first candidate (or the exact one if it existed)
+- name: Choose ConfigMap
+  set_fact:
+    selected_cm: "{{ cm_candidates[0] }}"
+    selected_cm_name: "{{ cm_candidates[0].metadata.name }}"
+
+# Optional: show what we’re using
+- name: Debug chosen ConfigMap
+  debug:
+    msg: "Using ConfigMap: {{ selected_cm_name }} in namespace {{ org_name }}-net"
+
+# Ensure target directory exists
 - name: Create the certs directory if it does not exist
   file:
     path: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
     state: directory
-
-# Write ONLY the mspConfig content to disk
-- name: Save config peer MSP config locally for genesis
-  copy:
-    content: "{{ cm.data.mspConfig }}"
-    dest: "{{ files_loc }}/{{ org_name }}-config-file.yaml"
   vars:
     files_loc: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
+
+# --- Option A: Save the full ConfigMap JSON (as before)
+- name: Save full ConfigMap JSON for genesis
+  copy:
+    content: "{{ selected_cm | to_nice_json }}"
+    dest: "{{ files_loc }}/{{ org_name }}-config-file.json"
+  vars:
+    files_loc: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
+
+# --- Option B: (If you only want the mspConfig field) ---
+# - name: Save only data.mspConfig for genesis
+#   copy:
+#     content: "{{ selected_cm.data.mspConfig }}"
+#     dest: "{{ files_loc }}/{{ org_name }}-mspConfig.yaml"
+#   vars:
+#     files_loc: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
