@@ -1,24 +1,78 @@
-# Fetch peer msp config
-- name: Fetch peer msp config
-  include_tasks: get_peer_msp_config.yaml
-  vars:
-    peer_name: "{{ peer.name }}"
-  loop: "{{ peers }}"
-  loop_control:
-    loop_var: peer
+# --- Diagnostics (optional but helpful) ---
+- name: Show variables used to fetch the Secret
+  debug:
+    msg:
+      kubeconfig: "{{ org.k8s.config_file }}"
+      context: "{{ kubernetes.context | default('minikube') }}"
+      namespace: "{{ org_name }}-net"
+      secret_name: "admin-msp"
 
-# Get admin msp certificates from secret
-- name: Get admin msp certificates from secret
+# --- Probe with kubectl to mirror the module behavior (optional) ---
+- name: Probe with kubectl (should match the module)
+  command: >
+    kubectl --kubeconfig {{ org.k8s.config_file }}
+    --context {{ kubernetes.context | default('minikube') }}
+    -n {{ org_name }}-net get secret admin-msp -o json
+  register: probe_admin_msp
+  failed_when: false
+  changed: false
+
+- name: Show probe result summary
+  debug:
+    msg: "{{ probe_admin_msp.stderr | default('') }}"
+
+# --- Wait for the Secret to exist ---
+- name: Get admin msp certificates from secret (with retries)
   kubernetes.core.k8s_info:
     kubeconfig: "{{ org.k8s.config_file }}"
+    context: "{{ kubernetes.context | default(omit) }}"
     kind: Secret
     name: "admin-msp"
     namespace: "{{ org_name }}-net"
   register: msp_cert_data
+  retries: 20         # try for ~5 minutes total
+  delay: 15
+  until: msp_cert_data.resources is defined and (msp_cert_data.resources | length) > 0
 
-- name: Save admin-msp cert locally for genesis
+# --- Hard fail with a useful message if still not found ---
+- name: Ensure Secret exists
+  assert:
+    that:
+      - msp_cert_data.resources | length > 0
+    fail_msg: >
+      Secret 'admin-msp' not found in namespace '{{ org_name }}-net'.
+      Checked with kubeconfig='{{ org.k8s.config_file }}' context='{{ kubernetes.context | default("N/A") }}'.
+      k8s_info returned resources={{ msp_cert_data.resources | default([]) | to_nice_json }}.
+      If it should exist, verify Helm release finished and the name/namespace are correct.
+
+# --- Create output directory ---
+- name: Ensure output directory exists
+  file:
+    path: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
+    state: directory
+
+# --- Option A: Save the whole Secret JSON (exactly what you were doing) ---
+- name: Save admin-msp secret JSON locally for genesis
   copy:
     content: "{{ msp_cert_data.resources[0] | to_nice_json }}"
-    dest: "{{ files_loc }}/{{ org_name }}.json"
-  vars:
-    files_loc: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
+    dest: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files/{{ org_name }}.json"
+
+# --- Option B (optional): Decode Secret.data and write individual files ---
+# Secrets are base64-encoded; this block writes decoded files if you prefer files over JSON.
+- name: Build decoded data dict (key -> decoded content)
+  set_fact:
+    admin_msp_decoded: >-
+      {{
+        dict(
+          msp_cert_data.resources[0].data.keys()
+          | zip(msp_cert_data.resources[0].data.values() | map('b64decode'))
+        )
+      }}
+
+- name: Write decoded admin-msp files
+  copy:
+    content: "{{ item.value }}"
+    dest: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files/{{ org_name }}-{{ item.key }}"
+    mode: '0600'
+  loop: "{{ admin_msp_decoded | dict2items }}"
+  when: admin_msp_decoded is defined
