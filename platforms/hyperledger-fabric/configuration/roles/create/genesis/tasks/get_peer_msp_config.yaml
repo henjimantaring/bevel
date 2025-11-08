@@ -1,48 +1,85 @@
-# Get config file from configmap
-- name: Get config file from config map 
+# --- Debug inputs so we know what we're using ---
+- name: Show variables used to fetch the ConfigMap
+  debug:
+    msg:
+      kubeconfig: "{{ org.k8s.config_file }}"
+      context: "{{ org.k8s.context | default('minikube') }}"
+      namespace: "{{ org_name }}-net"
+      cm_name: "{{ peer_name }}-msp-config"
+
+- name: Assert kubeconfig file exists
+  stat:
+    path: "{{ org.k8s.config_file }}"
+  register: kc_stat
+
+- name: Fail if kubeconfig is missing
+  fail:
+    msg: "Kubeconfig not found at {{ org.k8s.config_file }}"
+  when: not kc_stat.stat.exists
+
+# --- Show which context THAT kubeconfig is using ---
+- name: Print current-context from the same kubeconfig
+  command: >
+    kubectl --kubeconfig {{ org.k8s.config_file }} config current-context
+  register: curctx
+  changed_when: false
+
+- name: Show current-context
+  debug:
+    var: curctx.stdout
+
+# --- Probe with kubectl using same kubeconfig/context/namespace/name ---
+- name: Probe with kubectl (should match the module)
+  command: >
+    kubectl --kubeconfig {{ org.k8s.config_file }}
+    --context {{ org.k8s.context | default('minikube') }}
+    -n {{ org_name }}-net
+    get configmap {{ peer_name }}-msp-config -o json
+  register: kubectl_probe
+  changed_when: false
+  failed_when: false
+
+- name: Show kubectl probe result (non-fatal)
+  debug:
+    msg: "{{ kubectl_probe.rc == 0
+             | ternary('kubectl sees the CM', 'kubectl did NOT see the CM') }}"
+    
+# --- Use the Ansible module, with context & retries ---
+- name: Get config file from ConfigMap (Ansible module)
   kubernetes.core.k8s_info:
     kubeconfig: "{{ org.k8s.config_file }}"
+    context: "{{ org.k8s.context | default('minikube') }}"
+    api_version: v1
     kind: ConfigMap
-    name: "{{ peer_name }}-msp-config"
+    name: "{{ peer_name }}-msp-config }}"
     namespace: "{{ org_name }}-net"
   register: config_file_data
+  retries: 10
+  delay: 6
+  until: config_file_data.resources is defined and (config_file_data.resources | length) > 0
 
-- name: Debug input variables
-  debug:
-    msg:
-      peer_name: "{{ peer_name }}"
-      org_name: "{{ org_name }}"
-      expected_configmap_name: "{{ peer_name }}-msp-config"
-      namespace: "{{ org_name }}-net"
-      kubeconfig: "{{ org.k8s.config_file }}"
-      path: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
-
-- name: Debug k8s_info result (keys only)
-  debug:
-    msg:
-      - "resources length: {{ (config_file_data.resources | default([])) | length }}"
-      - "first resource name: {{ (config_file_data.resources | first).metadata.name | default('N/A') }}"
-  when: config_file_data.resources is defined and config_file_data.resources | length > 0
-
-
+# --- Clear error if still empty, and show the empty list for visibility ---
 - name: Ensure ConfigMap exists
   assert:
     that:
-      - config_file_data.resources is defined
       - config_file_data.resources | length > 0
     fail_msg: >
       ConfigMap '{{ peer_name }}-msp-config' not found in namespace '{{ org_name }}-net'.
-      resources={{ config_file_data.resources | default([]) }}
-  
-# Create the certs directory if it does not exist
+      resources={{ config_file_data.resources | default([]) | to_nice_json }}
+      kubectl_probe_rc={{ kubectl_probe.rc }}
+      kubeconfig={{ org.k8s.config_file }}
+      context={{ org.k8s.context | default('minikube') }}
+
+# --- Create output directory ---
 - name: Create the certs directory if it does not exist
   file:
     path: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
     state: directory
 
+# --- Save only when found ---
 - name: Save config peer msp config locally for genesis
   copy:
-    content: "{{ config_file_data.resources[0] | to_nice_json | trim }}"
+    content: "{{ config_file_data.resources[0] | to_nice_json }}"
     dest: "{{ files_loc }}/{{ org_name }}-config-file.json"
   vars:
     files_loc: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
