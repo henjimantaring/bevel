@@ -99,7 +99,7 @@ These parameters are referred to as same in each parent or child chart
 | Name   | Description    | Default Value   |
 | -------------| ---------- | --------- |
 | `image.orderer`  |Fabric Orderer image repository | `ghcr.io/hyperledger/bevel-fabric-orderer` |
-| `image.alpineUtils`  | Alpine utils image repository and tag | `alpineUtils: ghcr.io/henjimantaring/bevel-alpine:latest` |
+| `image.alpineUtils`  | Alpine utils image repository and tag | `alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest` |
 | `image.healthCheck`  | Busybox image repository and tag  | `busybox` |
 | `image.pullSecret`    | Secret name in the namespace containing private image registry credentials | `""`            |
 

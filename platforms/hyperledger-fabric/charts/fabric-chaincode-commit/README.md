@@ -71,7 +71,7 @@ The [values.yaml](https://github.com/hyperledger/bevel/blob/develop/platforms/hy
 | ----------------------| --------------------------------------------------| --------------------------------------------------|
 | namespace             | Namespace for organization's peer                 | org1-net                                        |
 | images.fabrictools    | Image name and version for fabric tools           |ghcr.io/hyperledger/bevel-fabric-tools:2.2.2                    |
-| images.alpineutils    | Image name and version to read certificates       | alpineUtils: ghcr.io/henjimantaring/bevel-alpine:latest           |
+| images.alpineutils    | Image name and version to read certificates       | alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest           |
 | labels                | Custom labels (if applicable)                     | ""                                                |
 
 ### Peer
