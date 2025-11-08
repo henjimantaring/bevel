@@ -17,6 +17,23 @@
       kubeconfig: "{{ org.k8s.config_file }}"
       path: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
 
+- name: Debug k8s_info result (keys only)
+  debug:
+    msg:
+      - "resources length: {{ (config_file_data.resources | default([])) | length }}"
+      - "first resource name: {{ (config_file_data.resources | first).metadata.name | default('N/A') }}"
+  when: config_file_data.resources is defined and config_file_data.resources | length > 0
+
+
+- name: Ensure ConfigMap exists
+  assert:
+    that:
+      - config_file_data.resources is defined
+      - config_file_data.resources | length > 0
+    fail_msg: >
+      ConfigMap '{{ peer_name }}-msp-config' not found in namespace '{{ org_name }}-net'.
+      resources={{ config_file_data.resources | default([]) }}
+  
 # Create the certs directory if it does not exist
 - name: Create the certs directory if it does not exist
   file:
@@ -25,7 +42,7 @@
 
 - name: Save config peer msp config locally for genesis
   copy:
-    content: "{{ config_file_data.resources[0] | to_nice_json }}"
+    content: "{{ config_file_data.resources[0] | to_nice_json | trim }}"
     dest: "{{ files_loc }}/{{ org_name }}-config-file.json"
   vars:
     files_loc: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
