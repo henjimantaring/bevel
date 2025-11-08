@@ -1,0 +1,118 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: peer1
+  namespace: supplychain-net
+  annotations:
+    fluxcd.io/automated: "false"
+spec:
+  interval: 1m
+  releaseName: peer1
+  chart:
+    spec:
+      interval: 1m
+      sourceRef:
+        kind: GitRepository
+        name: flux-dev
+        namespace: flux-dev
+      chart: platforms/hyperledger-fabric/charts/fabric-peernode    
+  values:
+    global:
+      version: 2.5.4
+      serviceAccountName: vault-auth
+      cluster:
+        provider: minikube
+        cloudNativeServices: false
+      vault:
+        type: hashicorp
+        network: fabric
+        address: http://192.168.254.113:8200
+        authPath: devsupplychain
+        secretEngine: secretsv2
+        secretPrefix: "data/devsupplychain"
+        role: vault-role
+        tls: false
+      proxy:
+        provider: none
+        externalUrlSuffix: 
+
+    storage:
+      enabled: True
+      peer: 512Mi
+      couchdb: 512Mi
+      reclaimPolicy: "Delete" 
+      volumeBindingMode: Immediate 
+      allowedTopologies:
+        enabled: false
+
+    certs:
+      generateCertificates: true
+      orgData:
+        caAddress: ca.supplychain-net:7054
+        caAdminUser: supplychain-admin
+        caAdminPassword: supplychain-adminpw
+        orgName: supplychain
+        type: peer
+        componentSubject: "O=Orderer,OU=Orderer,L=51.50/-0.13/London,C=GB"
+
+
+      settings:
+        createConfigMaps: False
+        refreshCertValue: false
+        addPeerValue: false
+        removeCertsOnDelete: true
+        removeOrdererTlsOnDelete: true
+
+    image:
+      couchdb: ghcr.io/henjimantaring/bevel-fabric-couchdb
+      peer: ghcr.io/henjimantaring/bevel-fabric-peer
+      alpineUtils: ghcr.io/henjimantaring/bevel-alpine:arm64
+      pullSecret: regcred
+
+    peer:
+      gossipPeerAddress: peer1.supplychain-net:7051
+      logLevel: info
+      localMspId: supplychainMSP
+      tlsStatus: true
+      cliEnabled: True
+      ordererAddress: orderer1.supplychain-net:7050
+      builder: hyperledger/fabric-ccenv
+      couchdb:
+        username: supplychain-user
+        password: supplychain-userpw
+      mspConfig:
+        organizationalUnitIdentifiers:
+        nodeOUs:
+          clientOUIdentifier: client
+          peerOUIdentifier: peer
+          adminOUIdentifier: admin
+          ordererOUIdentifier: orderer
+      serviceType: ClusterIP 
+      loadBalancerType: ""
+      ports:
+        grpc:
+          clusterIpPort: 7051
+        events:
+          clusterIpPort: 7053
+        couchdb:
+          clusterIpPort: 5984
+        metrics:
+          enabled: False
+          clusterIpPort: 9443    
+      resources:
+        limits:
+          memory: 1Gi
+          cpu: 1
+        requests:
+          memory: 512M
+          cpu: 0.25
+      upgrade: False
+      healthCheck: 
+        retries: 20
+        sleepTimeAfterError: 15
+
+    labels:
+      service:
+        - example1: example2
+      pvc:
+      deployment:
