@@ -7,60 +7,18 @@
   loop_control:
     loop_var: peer
 
-# ---------------------------------------------
-# Admin MSP Secret: this part does NOT use peer_name
-# ---------------------------------------------
-
-# Probe with kubectl (sanity check)
-- name: Probe admin-msp Secret with kubectl
-  command: >
-    kubectl --kubeconfig {{ org.k8s.config_file }}
-    --context {{ kubernetes.context | default('minikube') }}
-    -n {{ org_name }}-net
-    get secret admin-msp -o json
-  register: probe_admin_msp
-  failed_when: false
-  changed_when: false
-
-- name: Debug kubectl probe result
-  debug:
-    msg:
-      rc: "{{ probe_admin_msp.rc }}"
-      stderr: "{{ probe_admin_msp.stderr }}"
-      stdout: "{{ probe_admin_msp.stdout }}"
-
-# Fetch via k8s_info (proper way)
+# Get admin msp certificates from secret
 - name: Get admin msp certificates from secret
   kubernetes.core.k8s_info:
     kubeconfig: "{{ org.k8s.config_file }}"
-    context: "{{ kubernetes.context | default('minikube') }}"
-    api_version: v1
     kind: Secret
     name: "admin-msp"
     namespace: "{{ org_name }}-net"
   register: msp_cert_data
-  retries: 10
-  delay: 8
-  until: msp_cert_data.resources is defined and (msp_cert_data.resources | length) > 0
 
-- name: Ensure admin-msp Secret exists
-  assert:
-    that:
-      - msp_cert_data.resources | length > 0
-    fail_msg: >
-      admin-msp Secret not found in namespace '{{ org_name }}-net'.
-      k8s_info returned resources={{ msp_cert_data.resources | default([]) | to_nice_json }}
-
-# Output directory
-- name: Ensure genesis output directory exists
-  file:
-    path: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
-    state: directory
-
-# Save the entire Secret JSON
-- name: Save admin-msp secret JSON
+- name: Save admin-msp cert locally for genesis
   copy:
     content: "{{ msp_cert_data.resources[0] | to_nice_json }}"
-    dest: "{{ files_loc }}/{{ org_name }}-admin-msp.json"
+    dest: "{{ files_loc }}/{{ org_name }}.json"
   vars:
     files_loc: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
