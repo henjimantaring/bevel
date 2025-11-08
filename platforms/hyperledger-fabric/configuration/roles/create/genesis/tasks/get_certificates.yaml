@@ -1,29 +1,35 @@
-# --- Diagnostics (optional but helpful) ---
-- name: Show variables used to fetch the Secret
-  debug:
-    msg:
-      kubeconfig: "{{ org.k8s.config_file }}"
-      context: "{{ kubernetes.context | default('minikube') }}"
-      namespace: "{{ org_name }}-net"
-      secret_name: "admin-msp"
+# Fetch peer msp config
+- name: Fetch peer msp config
+  include_tasks: get_peer_msp_config.yaml
+  vars:
+    peer_name: "{{ peer.name }}"
+  loop: "{{ peers }}"
+  loop_control:
+    loop_var: peer
 
-# --- Probe with kubectl to mirror the module behavior (optional) ---
-- name: Probe with kubectl (should match the module)
+# ---------------------------------------------
+# Admin MSP Secret: this part does NOT use peer_name
+# ---------------------------------------------
+
+# Probe with kubectl (sanity check)
+- name: Probe admin-msp Secret with kubectl
   command: >
     kubectl --kubeconfig {{ org.k8s.config_file }}
     --context {{ kubernetes.context | default('minikube') }}
     -n {{ org_name }}-net
-    get configmap {{ peer_name }}-msp-config -o json
-  register: probe_cm
-  changed_when: false
+    get secret admin-msp -o json
+  register: probe_admin_msp
   failed_when: false
+  changed_when: false
 
-
-- name: Show probe result summary
+- name: Debug kubectl probe result
   debug:
-    msg: "{{ probe_admin_msp.stderr | default('') }}"
+    msg:
+      rc: "{{ probe_admin_msp.rc }}"
+      stderr: "{{ probe_admin_msp.stderr }}"
+      stdout: "{{ probe_admin_msp.stdout }}"
 
-# Get admin msp certificates from secret
+# Fetch via k8s_info (proper way)
 - name: Get admin msp certificates from secret
   kubernetes.core.k8s_info:
     kubeconfig: "{{ org.k8s.config_file }}"
@@ -33,51 +39,28 @@
     name: "admin-msp"
     namespace: "{{ org_name }}-net"
   register: msp_cert_data
+  retries: 10
+  delay: 8
+  until: msp_cert_data.resources is defined and (msp_cert_data.resources | length) > 0
 
-# Show what came back
-- name: Debug admin-msp lookup
-  debug:
-    msg:
-      count: "{{ (msp_cert_data.resources | default([])) | length }}"
-      names: "{{ (msp_cert_data.resources | default([])) | map(attribute='metadata.name') | list | default([]) }}"
-  changed_when: false
-
-# Fail early with a clear message if not found
 - name: Ensure admin-msp Secret exists
   assert:
-    that: msp_cert_data.resources | length > 0
+    that:
+      - msp_cert_data.resources | length > 0
     fail_msg: >
-      Secret 'admin-msp' not found in namespace '{{ org_name }}-net'
-      using kubeconfig '{{ org.k8s.config_file }}' and context
-      '{{ kubernetes.context | default('minikube') }}'.
-      resources={{ msp_cert_data.resources | default([]) }}
-  changed_when: false
+      admin-msp Secret not found in namespace '{{ org_name }}-net'.
+      k8s_info returned resources={{ msp_cert_data.resources | default([]) | to_nice_json }}
 
-# Create the output directory
-- name: Create the certs directory if it does not exist
+# Output directory
+- name: Ensure genesis output directory exists
   file:
     path: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
     state: directory
 
-# Save the whole Secret object (metadata + data) as JSON (optional)
-- name: Save admin-msp Secret JSON (raw) for debugging
+# Save the entire Secret JSON
+- name: Save admin-msp secret JSON
   copy:
     content: "{{ msp_cert_data.resources[0] | to_nice_json }}"
-    dest: "{{ files_loc }}/{{ org_name }}-admin-msp-secret.json"
+    dest: "{{ files_loc }}/{{ org_name }}-admin-msp.json"
   vars:
     files_loc: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
-
-# If you specifically want only the 'data' section (base64 values)
-- name: Save admin-msp data section only
-  copy:
-    content: "{{ (msp_cert_data.resources[0].data | default({})) | to_nice_json }}"
-    dest: "{{ files_loc }}/{{ org_name }}-admin-msp-data.json"
-  vars:
-    files_loc: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
-
-# Example: decode an expected key (adjust keys to what your Secret contains)
-# - name: Write admin cert (decoded)
-#   copy:
-#     content: "{{ msp_cert_data.resources[0].data['admincert.pem'] | b64decode }}"
-#     dest: "{{ files_loc }}/{{ org_name }}-admincert.pem"
-#   when: "'admincert.pem' in (msp_cert_data.resources[0].data | default({}))"
