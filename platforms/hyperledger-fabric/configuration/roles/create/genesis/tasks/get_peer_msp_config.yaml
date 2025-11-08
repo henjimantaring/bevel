@@ -1,4 +1,4 @@
-# --- Debug inputs so we know what we're using ---
+# ---- Visibility: show what we're about to use
 - name: Show variables used to fetch the ConfigMap
   debug:
     msg:
@@ -7,17 +7,18 @@
       namespace: "{{ org_name }}-net"
       cm_name: "{{ peer_name }}-msp-config"
 
+# ---- Sanity: kubeconfig exists
 - name: Assert kubeconfig file exists
   stat:
     path: "{{ org.k8s.config_file }}"
-  register: kc_stat
+  register: kubeconfig_stat
 
 - name: Fail if kubeconfig is missing
   fail:
     msg: "Kubeconfig not found at {{ org.k8s.config_file }}"
-  when: not kc_stat.stat.exists
+  when: not kubeconfig_stat.stat.exists
 
-# --- Show which context THAT kubeconfig is using ---
+# ---- Optional: show current-context from the SAME kubeconfig
 - name: Print current-context from the same kubeconfig
   command: >
     kubectl --kubeconfig {{ org.k8s.config_file }} config current-context
@@ -28,58 +29,47 @@
   debug:
     var: curctx.stdout
 
-# --- Probe with kubectl using same kubeconfig/context/namespace/name ---
-- name: Probe with kubectl (should match the module)
-  command: >
-    kubectl --kubeconfig {{ org.k8s.config_file }}
-    --context {{ org.k8s.context | default('minikube') }}
-    -n {{ org_name }}-net
-    get configmap {{ peer_name }}-msp-config -o json
-  register: kubectl_probe
-  changed_when: false
-  failed_when: false
-
-- name: Show kubectl probe result (non-fatal)
-  debug:
-    msg: "{{ kubectl_probe.rc == 0
-             | ternary('kubectl sees the CM', 'kubectl did NOT see the CM') }}"
-    
-# --- Use the Ansible module, with context & retries ---
-- name: Get config file from ConfigMap (Ansible module)
+# ---- Wait for the ConfigMap to appear (race-proof)
+- name: Wait for peer MSP ConfigMap to exist
   kubernetes.core.k8s_info:
     kubeconfig: "{{ org.k8s.config_file }}"
     context: "{{ org.k8s.context | default('minikube') }}"
-    api_version: v1
     kind: ConfigMap
-    name: "{{ peer_name }}-msp-config }}"
     namespace: "{{ org_name }}-net"
-  register: config_file_data
-  retries: 10
-  delay: 6
-  until: config_file_data.resources is defined and (config_file_data.resources | length) > 0
+    name: "{{ peer_name }}-msp-config"
+  register: cm_info
+  retries: 20            # ~3m20s total
+  delay: 10
+  until: cm_info.resources is defined and cm_info.resources | length > 0
 
-# --- Clear error if still empty, and show the empty list for visibility ---
+# ---- Extra guard: assert we really have it
 - name: Ensure ConfigMap exists
   assert:
     that:
-      - config_file_data.resources | length > 0
+      - cm_info.resources | length > 0
     fail_msg: >
       ConfigMap '{{ peer_name }}-msp-config' not found in namespace '{{ org_name }}-net'.
-      resources={{ config_file_data.resources | default([]) | to_nice_json }}
-      kubectl_probe_rc={{ kubectl_probe.rc }}
-      kubeconfig={{ org.k8s.config_file }}
-      context={{ org.k8s.context | default('minikube') }}
+      resources={{ (cm_info.resources | default([])) | string }}
 
-# --- Create output directory ---
+# ---- Create output dir
 - name: Create the certs directory if it does not exist
   file:
     path: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
     state: directory
 
-# --- Save only when found ---
-- name: Save config peer msp config locally for genesis
+# ---- Save full ConfigMap JSON (original behavior)
+- name: Save config peer msp config locally for genesis (entire CM)
   copy:
-    content: "{{ config_file_data.resources[0] | to_nice_json }}"
+    content: "{{ cm_info.resources[0] | to_nice_json }}"
     dest: "{{ files_loc }}/{{ org_name }}-config-file.json"
+  vars:
+    files_loc: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
+
+# ---- Optionally also save JUST the mspConfig data key as YAML
+- name: Save only .data.mspConfig (optional)
+  copy:
+    content: "{{ cm_info.resources[0].data.mspConfig | default('') }}"
+    dest: "{{ files_loc }}/{{ org_name }}-mspConfig.yaml"
+  when: cm_info.resources[0].data is defined and 'mspConfig' in cm_info.resources[0].data
   vars:
     files_loc: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
