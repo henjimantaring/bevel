@@ -7,6 +7,17 @@
     namespace: "{{ org_name }}-net"
   register: config_file_data
 
+- name: Debug input variables
+  debug:
+    msg:
+      peer_name: "{{ peer_name }}"
+      org_name: "{{ org_name }}"
+      expected_configmap_name: "{{ peer_name }}-msp-config"
+      namespace: "{{ org_name }}-net"
+      kubeconfig: "{{ org.k8s.config_file }}"
+      path: "{{ playbook_dir }}/../../../{{ charts_dir }}/fabric-genesis/files"
+      dest: "{{ files_loc }}/{{ org_name }}-config-file.json"
+
 # Create the certs directory if it does not exist
 - name: Create the certs directory if it does not exist
   file:
