@@ -69,7 +69,7 @@ These parameters are referred to as same in each parent or child chart
 | Name   | Description    | Default Value   |
 | -------------| ---------- | --------- |
 | `image.caTools`  | Fabric CA Tools image repository and tag  | `ghcr.io/hyperledger/bevel-fabric-ca:latest` |
-| `image.alpineUtils`  | Alpine utils image repository and tag | `alpineUtils: ghcr.io/henjimantaring/bevel-alpine:arm64` |
+| `image.alpineUtils`  | Alpine utils image repository and tag | `alpineUtils: ghcr.io/henjimantaring/bevel-alpine:latest` |
 | `image.pullSecret`    | Secret name in the namespace containing private image registry credentials | `""`            |
 | `image.pullPolicy`    | Image pull policy | `IfNotPresent`            |
 

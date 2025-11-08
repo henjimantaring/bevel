@@ -81,7 +81,7 @@ These parameters are referred to as same in each parent or child chart
 
 | Name   | Description    | Default Value   |
 | -------------| ---------- | --------- |
-| `image.alpineUtils`  | Alpine utils image repository and tag | `ghcr.io/hyperledger/bevel-alpine:arm64` |
+| `image.alpineUtils`  | Alpine utils image repository and tag | `ghcr.io/hyperledger/bevel-alpine:latest` |
 | `image.ca`  | Fabric CA image repository and tag  | `ghcr.io/hyperledger/bevel-fabric-ca:latest` |
 | `image.pullSecret`    | Secret name in the namespace containing private image registry credentials | `""`            |
 

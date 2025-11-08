@@ -82,7 +82,7 @@ The [values.yaml](https://github.com/hyperledger/bevel/blob/develop/platforms/hy
 | Name              | Description                           | Default Value                                       |
 | ------------------| ------------------------------------- | ----------------------------------------------------|
 | repository        | Docker image of the API server        | ghcr.io/hyperledger/cactus-cmd-api-server:1.1.3     |
-| alpineutils       | Docker image of the alpine utils      | alpineUtils: ghcr.io/henjimantaring/bevel-alpine:arm64             |
+| alpineutils       | Docker image of the alpine utils      | alpineUtils: ghcr.io/henjimantaring/bevel-alpine:latest             |
 | pullPolicy        | Pull policy of the docker image       | IfNotPresent                                        |
 
 ### Service
