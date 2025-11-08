@@ -57,8 +57,8 @@
   shell: |
     {% for chaincode in chaincodes %}
     vault kv delete {{ item.vault.secret_path | default('secretsv2') }}/{{ item.name | lower }}/peerOrganizations/{{ component_name }}/peers/{{ peer.name }}.{{ component_name }}/chaincodes/{{ chaincode.name }}
-    vault kv delete {{ item.vault.secret_path | default('secretsv2') }}/{{ item.name | lower }}/peerOrganizations/{{ component_name }}/chaincodes/{{ chaincode.name }}/certificate/v{{ chaincode.version }}
-    vault kv delete {{ item.vault.secret_path | default('secretsv2') }}/{{ item.name | lower }}/peerOrganizations/{{ component_name }}/chaincodes/{{ chaincode.name }}/package/v{{ chaincode.version }}
+    vault kv delete {{ vault.secret_path | default('secretsv2') }}/{{ network.env.type }}{{ item.name | lower }}/chaincodes/secrets/cc-{{ chaincode.name | lower | e }}-tls
+    vault kv delete {{ vault.secret_path | default('secretsv2') }}/{{ network.env.type }}{{ item.name | lower }}/chaincodes/secrets/peers-{{ chaincode.name | lower | e }}-tls
     {% endfor %}
   vars:
     chaincodes: "{{ peer.chaincodes }}"
