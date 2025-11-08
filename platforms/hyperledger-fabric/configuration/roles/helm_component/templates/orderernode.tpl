@@ -66,7 +66,7 @@ spec:
 
     image:
       orderer: {{ docker_url }}/{{ orderer_image }}
-      alpineUtils: {{ docker_url }}/bevel-alpine:arm64arm64
+      alpineUtils: {{ docker_url }}/bevel-alpine:arm64
 {% if network.docker.username is defined and network.docker.password is defined  %}
       pullSecret: regcred
 {% else %}
