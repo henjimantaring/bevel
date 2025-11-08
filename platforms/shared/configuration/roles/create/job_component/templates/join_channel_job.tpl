@@ -19,7 +19,7 @@ global:
 
 image:
   fabricTools: {{ docker_url }}/{{ charts.fabric_tools_image }}
-  alpineUtils: {{ docker_url }}/bevel-alpine:arm64
+  alpineUtils: ghcr.io/hyperledger/bevel-alpine:arm64
 {% if network.docker.username is defined and network.docker.password is defined  %}
   pullSecret: regcred
 {% else %}
