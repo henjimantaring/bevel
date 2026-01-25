@@ -57,6 +57,7 @@ storage:
   allowedTopologies:
     enabled: false
   createStorageClass: true
+  storageClassName: storage-ca
 
 image:
   #Provide the valid image name and version to read certificates from vault server
