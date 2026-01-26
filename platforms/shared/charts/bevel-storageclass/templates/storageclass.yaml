@@ -4,8 +4,6 @@
 #  SPDX-License-Identifier: Apache-2.0
 ##############################################################################################
 
-{{- if (default true .Values.storage.createStorageClass) }}
-
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -33,6 +31,4 @@ allowedTopologies:
           - {{ . | quote }}
 {{- end }}
 {{- end }}
-{{- end }}
-
 {{- end }}
