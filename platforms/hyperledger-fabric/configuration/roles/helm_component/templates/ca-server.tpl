@@ -17,10 +17,10 @@ spec:
         namespace: flux-{{ network.env.type }}
       chart: {{ charts_dir }}/fabric-ca-server   
   values:
-    {% if component_ns != (network.organizations | first).name | lower ~ '-net' %}
+{% if component_ns != (network.organizations | first).name | lower ~ '-net' %}
     bevel-storageclass:
       createStorageClass: false
-    {% endif %}
+{% endif %}
     global:
       serviceAccountName: vault-auth
       cluster:
