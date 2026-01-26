@@ -17,7 +17,9 @@ spec:
         namespace: flux-prod
       chart: platforms/hyperledger-fabric/charts/fabric-ca-server   
   values:
-    global:
+        bevel-storageclass:
+      createStorageClass: false
+        global:
       serviceAccountName: vault-auth
       cluster:
         provider: aws
