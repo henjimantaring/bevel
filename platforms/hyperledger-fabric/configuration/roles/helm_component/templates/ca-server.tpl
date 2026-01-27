@@ -46,6 +46,7 @@ spec:
       volumeBindingMode: Immediate
       allowedTopologies:
         enabled: false
+      createStorageClass: false
 
     image:
       alpineUtils: {{ docker_url }}/bevel-alpine:{{ bevel_alpine_version }}
