@@ -17,8 +17,9 @@ spec:
         namespace: flux-{{ network.env.type }}
       chart: {{ charts_dir }}/fabric-ca-server   
   values:
-    bevel-storageclass:
-      createStorageClass: false
+    storage:
+      enabled: false
+
     global:
       serviceAccountName: vault-auth
       cluster:
@@ -43,8 +44,6 @@ spec:
       reclaimPolicy: "Delete"
       volumeBindingMode: Immediate
       allowedTopologies:
-        enabled: false
-      storage:
         enabled: false
 
     image:
