@@ -17,7 +17,13 @@ spec:
         namespace: flux-prod
       chart: platforms/hyperledger-fabric/charts/fabric-ca-server   
   values:
-
+    storage:
+      enabled: true
+      size: 512Mi
+      reclaimPolicy: "Delete"
+      volumeBindingMode: Immediate
+      allowedTopologies:
+        enabled: false
     global:
       serviceAccountName: vault-auth
       cluster:
@@ -36,13 +42,6 @@ spec:
       proxy:
         provider: haproxy
         externalUrlSuffix: org3proxy.hlf.doconchain.com
-
-    storage:
-      size: 512Mi
-      reclaimPolicy: "Delete"
-      volumeBindingMode: Immediate
-      allowedTopologies:
-        enabled: false
 
     image:
       alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
