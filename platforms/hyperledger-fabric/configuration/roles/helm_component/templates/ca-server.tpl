@@ -17,6 +17,9 @@ spec:
         namespace: flux-{{ network.env.type }}
       chart: {{ charts_dir }}/fabric-ca-server   
   values:
+    storage:
+      enabled: false
+
     global:
       serviceAccountName: vault-auth
       cluster:
