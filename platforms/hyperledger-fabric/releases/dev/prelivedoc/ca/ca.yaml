@@ -17,8 +17,6 @@ spec:
         namespace: flux-prod
       chart: platforms/hyperledger-fabric/charts/fabric-ca-server   
   values:
-    storage:
-      enabled: false
 
     global:
       serviceAccountName: vault-auth
