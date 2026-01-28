@@ -17,8 +17,13 @@ spec:
         namespace: flux-{{ network.env.type }}
       chart: {{ charts_dir }}/fabric-ca-server   
   values:
+{% if org.name | lower == (network.organizations | first).name | lower %}
+    storage:
+      enabled: true
+{% else %}
     storage:
       enabled: false
+{% endif %}
 
     global:
       serviceAccountName: vault-auth
