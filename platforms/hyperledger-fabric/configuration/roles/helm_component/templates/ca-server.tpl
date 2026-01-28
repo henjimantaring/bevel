@@ -17,7 +17,13 @@ spec:
         namespace: flux-{{ network.env.type }}
       chart: {{ charts_dir }}/fabric-ca-server   
   values:
-
+    storage:
+      enabled: true
+      size: 512Mi
+      reclaimPolicy: "Delete"
+      volumeBindingMode: Immediate
+      allowedTopologies:
+        enabled: false
     global:
       serviceAccountName: vault-auth
       cluster:
@@ -36,13 +42,6 @@ spec:
       proxy:
         provider: {{ network.env.proxy | quote }}
         externalUrlSuffix: {{ org.external_url_suffix }}
-
-    storage:
-      size: 512Mi
-      reclaimPolicy: "Delete"
-      volumeBindingMode: Immediate
-      allowedTopologies:
-        enabled: false
 
     image:
       alpineUtils: {{ docker_url }}/bevel-alpine:{{ bevel_alpine_version }}
