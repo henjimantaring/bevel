@@ -48,6 +48,8 @@ spec:
       volumeBindingMode: Immediate
       allowedTopologies:
         enabled: false
+      createStorageClass: false
+      storageClass: gp3 
 
     global:
       serviceAccountName: vault-auth
