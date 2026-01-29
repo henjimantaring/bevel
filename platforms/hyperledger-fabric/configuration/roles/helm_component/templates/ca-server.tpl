@@ -17,6 +17,23 @@ spec:
         namespace: flux-{{ network.env.type }}
       chart: {{ charts_dir }}/fabric-ca-server   
   values:
+    nodeSelector:
+      eks.amazonaws.com/nodegroup: fabric-aux
+
+    tolerations:
+      - key: "eks.amazonaws.com/capacityType"
+        operator: "Equal"
+        value: "SPOT"
+        effect: "NoSchedule"
+
+    resources:
+      requests:
+        cpu: "200m"
+        memory: "256Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
     storage:
       enabled: true
       size: 512Mi
@@ -24,6 +41,7 @@ spec:
       volumeBindingMode: Immediate
       allowedTopologies:
         enabled: false
+
     global:
       serviceAccountName: vault-auth
       cluster:
