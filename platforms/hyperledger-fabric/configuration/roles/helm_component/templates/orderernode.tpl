@@ -79,6 +79,15 @@ spec:
       localMspId: {{ org_name }}MSP
       tlsStatus: true
       keepAliveServerInterval: 10s
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: eks.amazonaws.com/nodegroup
+                    operator: In
+                    values:
+                      - fabric-core
       serviceType: ClusterIP
       ports:
         grpc:
