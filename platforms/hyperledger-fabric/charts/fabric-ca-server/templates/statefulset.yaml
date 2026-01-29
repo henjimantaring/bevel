@@ -45,6 +45,15 @@ spec:
         app.kubernetes.io/managed-by: helm
         {{- include "labels.deployment" . | nindent 8 }}
     spec:
+      {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+
+      {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
       serviceAccountName: {{ .Values.global.serviceAccountName }}
       {{- if .Values.image.pullSecret }}
       imagePullSecrets:
