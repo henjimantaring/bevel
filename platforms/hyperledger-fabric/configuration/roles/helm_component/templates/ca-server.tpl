@@ -18,7 +18,7 @@ spec:
       chart: {{ charts_dir }}/fabric-ca-server   
   values:
     storage:
-      enabled: true
+      enabled: false
       size: 512Mi
       reclaimPolicy: "Delete"
       volumeBindingMode: Immediate
