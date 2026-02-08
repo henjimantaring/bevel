@@ -39,7 +39,7 @@ spec:
     storage:
       size: 512Mi
       reclaimPolicy: "Delete" 
-      volumeBindingMode: 
+      volumeBindingMode: WaitForFirstConsumer
       allowedTopologies:
         enabled: false
 
@@ -81,13 +81,15 @@ spec:
       keepAliveServerInterval: 10s
       affinity:
         nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: eks.amazonaws.com/nodegroup
-                    operator: In
-                    values:
-                      - fabric-core
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: eks.amazonaws.com/nodegroup
+                        operator: In
+                        values:
+                          - fabric-core
       serviceType: ClusterIP
       ports:
         grpc:
