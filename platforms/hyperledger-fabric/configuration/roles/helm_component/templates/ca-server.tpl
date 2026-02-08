@@ -19,13 +19,16 @@ spec:
   values:
     affinity:
       nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: eks.amazonaws.com/nodegroup
-                  operator: In
-                  values:
-                    - fabric-aux
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: eks.amazonaws.com/nodegroup
+                      operator: In
+                      values:
+                        - fabric-aux
+
 
     tolerations:
       - key: "eks.amazonaws.com/capacityType"
@@ -45,7 +48,7 @@ spec:
       enabled: true
       size: 512Mi
       reclaimPolicy: "Delete"
-      volumeBindingMode: Immediate
+      volumeBindingMode: WaitForFirstConsumer
       allowedTopologies:
         enabled: false
       createStorageClass: false
