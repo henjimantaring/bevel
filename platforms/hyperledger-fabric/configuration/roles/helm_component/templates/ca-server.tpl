@@ -45,15 +45,9 @@ spec:
         memory: "512Mi"
 
     storage:
-      enabled: false
+      enabled: true
       size: 512Mi
-      reclaimPolicy: "Delete"
-      volumeBindingMode: WaitForFirstConsumer
-      allowedTopologies:
-        enabled: false
-      createStorageClass: false
       storageClass: gp3
-
 
     global:
       serviceAccountName: vault-auth
