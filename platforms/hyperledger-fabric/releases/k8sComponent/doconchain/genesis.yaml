@@ -38,6 +38,14 @@ organizations:
     peers:
     - name: peer0
       peerAddress: peer0.gov-net.org2proxy.hlf.doconchain.com:443
+  - name: prelivegov
+    peers:
+    - name: peer0
+      peerAddress: peer0.prelivegov-net.org4proxy.hlf.doconchain.com:443
+  - name: prelivedoc
+    peers:
+    - name: peer0
+      peerAddress: peer0.prelivedoc-net.org3proxy.hlf.doconchain.com:443
 
 consensus: raft
 
@@ -45,19 +53,20 @@ consensus: raft
 channels:
  
  
-  - name: prodch
+ 
+  - name: plchannel
     consortium: DoconchainConsortium
     orderers: 
       - doconchain
     participants:
-      - doconchain
-      - gov
+      - prelivedoc
+      - prelivegov
 
 settings:
-  generateGenesis: True 
+  generateGenesis: False 
   removeConfigMapOnDelete: false
 
-add_new_org: false
+add_new_org: true
 newOrgs:
-  - name: doconchain
-  - name: gov
+  - name: prelivegov
+  - name: prelivedoc
