@@ -45,7 +45,8 @@ consensus: raft
 channels:
  
  
-  - name: allchannel
+ 
+  - name: prelivech
     consortium: DoconchainConsortium
     orderers: 
       - doconchain
@@ -54,10 +55,8 @@ channels:
       - gov
 
 settings:
-  generateGenesis: True 
+  generateGenesis: False 
   removeConfigMapOnDelete: false
 
 add_new_org: false
 newOrgs:
-  - name: doconchain
-  - name: gov
