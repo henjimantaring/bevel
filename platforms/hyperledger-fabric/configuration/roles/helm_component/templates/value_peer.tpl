@@ -97,7 +97,7 @@ spec:
                   - key: eks.amazonaws.com/nodegroup
                     operator: In
                     values:
-                      - fabric-core
+                      - fabric-core-group
       cliEnabled: {{ enabled_cli }}
       ordererAddress: {{ orderer.uri }}
       builder: hyperledger/fabric-ccenv

@@ -101,7 +101,7 @@ orderer:
             - key: eks.amazonaws.com/nodegroup
               operator: In
               values:
-                - fabric-core
+                - fabric-core-group
   #Provide the name of the consensus. Currently support raft and kafka
   #Eg. consensus: raft
   consensus: raft

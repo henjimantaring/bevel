@@ -89,7 +89,7 @@ spec:
                       - key: eks.amazonaws.com/nodegroup
                         operator: In
                         values:
-                          - fabric-core
+                          - fabric-core-group
       serviceType: ClusterIP
       ports:
         grpc:
