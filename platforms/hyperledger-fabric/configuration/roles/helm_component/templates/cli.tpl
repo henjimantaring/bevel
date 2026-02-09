@@ -25,7 +25,7 @@ spec:
                 - key: eks.amazonaws.com/nodegroup
                   operator: In
                   values:
-                    - fabric-aux-group
+                    - fabric-aux
 
     tolerations:
       - key: "eks.amazonaws.com/capacityType"
