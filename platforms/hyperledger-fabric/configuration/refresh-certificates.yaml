@@ -36,26 +36,11 @@
     loop: "{{ network.organizations }}"
     loop_control:
       loop_var: org
-    when: org.type == 'orderer'
-  
-  # Create CA Tools helm-value files and check-in
-  - name: Create CA tools for each organization
-    include_role:
-      name: "create/ca_tools/orderer"
-    vars:
-      component_name: "{{ item.name | lower}}-net"
-      component: "{{ item.name | lower}}"
-      component_type: "{{ item.type | lower}}"
-      component_services: "{{ item.services }}"
-      kubernetes: "{{ item.k8s }}"
-      vault: "{{ item.vault }}"
-      ca: "{{ item.services.ca }}"
-      docker_url: "{{ network.docker.url }}"
-      gitops: "{{ item.gitops }}"
-      values_dir: "{{playbook_dir}}/../../../{{item.gitops.release_dir}}/{{ item.name | lower }}"
-    loop: "{{ network['organizations'] }}"
-    when: item.type == 'orderer'
-  
+    when:
+      - org.services is defined
+      - org.services.orderers is defined
+      - org.services.orderers | length > 0
+
 # Generate script to modify the fetched configuration block
   - name: "Modify the system channel with tls information of new orderer"
     include_role:
@@ -70,7 +55,11 @@
     loop: "{{ network.organizations }}"
     loop_control:
       loop_var: org
-    when: org.type == 'orderer'
+    when:
+      - org.services is defined
+      - org.services.orderers is defined
+      - org.services.orderers | length > 0
+
 
   #Create Organization crypto materials for new organization
   - include_role:
@@ -96,8 +85,9 @@
       name: "create/orderers"
     vars:
       build_path: "./build"
-      namespace: "{{ item.name | lower}}-net"
-      component_type: "{{ item.type | lower}}"
+      namespace: "{{ item.name | lower }}-net"
+      component: "{{ item.name | lower }}"          # ✅ REQUIRED
+      component_type: "orderer"                     # ✅ REQUIRED
       component_services: "{{ item.services }}"
       vault: "{{ item.vault }}"
       git_protocol: "{{ item.gitops.git_protocol }}"
@@ -105,9 +95,12 @@
       git_branch: "{{ item.gitops.branch }}"
       docker_url: "{{ network.docker.url }}"
       charts_dir: "{{ item.gitops.chart_source }}"
-      values_dir: "{{playbook_dir}}/../../../{{item.gitops.release_dir}}/{{ item.name | lower }}"
-    loop: "{{ network['organizations'] }}"
-    when: item.type == 'orderer'
+      values_dir: "{{ playbook_dir }}/../../../{{ item.gitops.release_dir }}/{{ item.name | lower }}"
+    loop: "{{ network.organizations }}"
+    when:
+      - item.services is defined
+      - item.services.orderers is defined
+      - item.services.orderers | length > 0
   
   # This role creates the value file for peers of organisations and write couch db credentials
   # to the vault.
