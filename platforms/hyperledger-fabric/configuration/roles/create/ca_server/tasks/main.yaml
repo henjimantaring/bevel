@@ -20,6 +20,12 @@
     KUBECONFIG={{ kubernetes.config_file }} kubectl config view --minify | grep server | cut -f 2- -d ":" | tr -d " "
   register: kubernetes_server_url
 
+- name: Get storage classes
+  k8s_info:
+    kind: StorageClass
+    kubeconfig: "{{ kubernetes.config_file }}"
+  register: storage_classes_info
+
 # Create the CA value file
 - name: "Create CA server values"
   include_role:
