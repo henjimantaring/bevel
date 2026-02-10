@@ -35,6 +35,7 @@
     subject: "{{ ca.subject }}"
     external_url_suffix: "{{ org.external_url_suffix }}"
     kubernetes_url: "{{ kubernetes_server_url.stdout }}"
+    sc_enabled: "{{ false if storage_classes_info.resources | selectattr('metadata.name', 'equalto', sc_name) | list else true }}"
 
 # Git Push: Push the above generated files to git directory 
 - name: Git Push

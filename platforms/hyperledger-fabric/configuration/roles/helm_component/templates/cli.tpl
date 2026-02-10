@@ -17,15 +17,16 @@ spec:
         namespace: flux-{{ network.env.type }}
       chart: {{ charts_dir }}/fabric-cli    
   values:
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: eks.amazonaws.com/nodegroup
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                - key: eks.amazonaws.com/capacityType
                   operator: In
                   values:
-                    - fabric-aux
+                  - SPOT
 
     tolerations:
       - key: "eks.amazonaws.com/capacityType"

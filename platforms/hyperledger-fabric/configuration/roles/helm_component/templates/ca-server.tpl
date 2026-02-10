@@ -17,17 +17,16 @@ spec:
         namespace: flux-{{ network.env.type }}
       chart: {{ charts_dir }}/fabric-ca-server   
   values:
-    affinity:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              nodeSelectorTerms:
-                - matchExpressions:
-                    - key: eks.amazonaws.com/nodegroup
-                      operator: In
-                      values:
-                        - fabric-aux
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                - key: eks.amazonaws.com/capacityType
+                  operator: In
+                  values:
+                  - SPOT
 
 
     tolerations:
@@ -45,10 +44,10 @@ spec:
         memory: "512Mi"
 
     storage:
-      enabled: true
+      enabled: {{ sc_enabled }}
       size: 512Mi
       reclaimPolicy: "Delete"
-      volumeBindingMode: WaitForFirstConsumer
+      volumeBindingMode: Immediate
       allowedTopologies:
         enabled: false
       createStorageClass: false

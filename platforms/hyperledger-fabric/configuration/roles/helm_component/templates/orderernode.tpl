@@ -81,15 +81,13 @@ spec:
       keepAliveServerInterval: 10s
       affinity:
         nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              preference:
-                nodeSelectorTerms:
-                  - matchExpressions:
-                      - key: eks.amazonaws.com/nodegroup
-                        operator: In
-                        values:
-                          - fabric-core
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: eks.amazonaws.com/capacityType
+                operator: In
+                values:
+                - ON_DEMAND
       serviceType: ClusterIP
       ports:
         grpc:

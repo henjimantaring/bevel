@@ -94,14 +94,14 @@ image:
 
 orderer:
   affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
         - matchExpressions:
-            - key: eks.amazonaws.com/nodegroup
-              operator: In
-              values:
-                - fabric-core
+          - key: eks.amazonaws.com/capacityType
+            operator: In
+            values:
+            - ON_DEMAND
   #Provide the name of the consensus. Currently support raft and kafka
   #Eg. consensus: raft
   consensus: raft
