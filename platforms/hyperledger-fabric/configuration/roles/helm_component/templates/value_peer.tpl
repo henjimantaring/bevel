@@ -91,14 +91,13 @@ spec:
       tlsStatus: true
       affinity:
         nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              matchExpressions:
-              - key: eks.amazonaws.com/capacityType
-                operator: In
-                values:
-                - ON_DEMAND
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: eks.amazonaws.com/nodegroup
+                    operator: In
+                    values:
+                      - fabric-core
       cliEnabled: {{ enabled_cli }}
       ordererAddress: {{ orderer.uri }}
       builder: hyperledger/fabric-ccenv
