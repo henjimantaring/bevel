@@ -41,7 +41,7 @@ spec:
       peer: 512Mi
       couchdb: 512Mi
       reclaimPolicy: "Delete" 
-      volumeBindingMode: Immediate 
+      volumeBindingMode: WaitForFirstConsumer 
       allowedTopologies:
         enabled: false
 
