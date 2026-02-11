@@ -46,7 +46,7 @@ spec:
         memory: "512Mi"
 
     storage:
-      enabled: true
+      enabled: false
       size: 512Mi
       reclaimPolicy: "Delete"
       volumeBindingMode: WaitForFirstConsumer
