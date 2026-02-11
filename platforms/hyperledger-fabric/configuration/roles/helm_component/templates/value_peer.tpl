@@ -93,11 +93,11 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-              - matchExpressions:
-                  - key: eks.amazonaws.com/nodegroup
-                    operator: In
-                    values:
-                      - fabric-core
+            - matchExpressions:
+              - key: eks.amazonaws.com/capacityType
+                operator: In
+                values:
+                - ON_DEMAND
       cliEnabled: {{ enabled_cli }}
       ordererAddress: {{ orderer.uri }}
       builder: hyperledger/fabric-ccenv
