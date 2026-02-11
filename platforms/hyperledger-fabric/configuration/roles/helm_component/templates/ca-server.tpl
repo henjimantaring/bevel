@@ -5,9 +5,11 @@ metadata:
   namespace: {{ component_ns }}
   annotations:
     fluxcd.io/automated: "false"
+
 spec:
   interval: 1m
   releaseName: {{ component_name | replace('_','-') }}
+
   chart:
     spec:
       interval: 1m
@@ -15,19 +17,19 @@ spec:
         kind: GitRepository
         name: flux-{{ network.env.type }}
         namespace: flux-{{ network.env.type }}
-      chart: {{ charts_dir }}/fabric-ca-server   
+      chart: {{ charts_dir }}/fabric-ca-server
+
   values:
-      affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              preference:
-                matchExpressions:
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
                 - key: eks.amazonaws.com/capacityType
                   operator: In
                   values:
-                  - SPOT
-
+                    - SPOT
 
     tolerations:
       - key: "eks.amazonaws.com/capacityType"
@@ -53,7 +55,6 @@ spec:
       createStorageClass: false
       storageClass: gp3
 
-
     global:
       serviceAccountName: vault-auth
       cluster:
@@ -76,7 +77,7 @@ spec:
     image:
       alpineUtils: {{ docker_url }}/bevel-alpine:{{ bevel_alpine_version }}
       ca: {{ docker_url }}/{{ ca_image[network.version] }}
-{% if network.docker.username is defined and network.docker.password is defined  %}
+{% if network.docker.username is defined and network.docker.password is defined %}
       pullSecret: regcred
 {% else %}
       pullSecret: ""
