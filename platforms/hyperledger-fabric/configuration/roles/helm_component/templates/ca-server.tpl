@@ -44,10 +44,10 @@ spec:
         memory: "512Mi"
 
     storage:
-      enabled: {{ sc_enabled }}
+      enabled: true
       size: 512Mi
       reclaimPolicy: "Delete"
-      volumeBindingMode: Immediate
+      volumeBindingMode: WaitForFirstConsumer
       allowedTopologies:
         enabled: false
       createStorageClass: false
