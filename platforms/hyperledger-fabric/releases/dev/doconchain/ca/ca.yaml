@@ -5,9 +5,11 @@ metadata:
   namespace: doconchain-net
   annotations:
     fluxcd.io/automated: "false"
+
 spec:
   interval: 1m
   releaseName: ca
+
   chart:
     spec:
       interval: 1m
@@ -15,19 +17,19 @@ spec:
         kind: GitRepository
         name: flux-prod
         namespace: flux-prod
-      chart: platforms/hyperledger-fabric/charts/fabric-ca-server   
+      chart: platforms/hyperledger-fabric/charts/fabric-ca-server
+
   values:
-      affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              preference:
-                matchExpressions:
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
                 - key: eks.amazonaws.com/capacityType
                   operator: In
                   values:
-                  - SPOT
-
+                    - SPOT
 
     tolerations:
       - key: "eks.amazonaws.com/capacityType"
@@ -52,7 +54,6 @@ spec:
         enabled: false
       createStorageClass: false
       storageClass: gp3
-
 
     global:
       serviceAccountName: vault-auth
