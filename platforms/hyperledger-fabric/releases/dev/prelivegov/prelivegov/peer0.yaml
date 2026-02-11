@@ -38,7 +38,7 @@ spec:
 
     storage:
       enabled: false
-      peer: 512Mi
+      peer: 512Mi 
       couchdb: 512Mi
       reclaimPolicy: "Delete" 
       volumeBindingMode: Immediate 

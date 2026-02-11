@@ -91,7 +91,7 @@ spec:
       tlsStatus: true
       affinity:
         nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
+          preferredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
               - key: eks.amazonaws.com/capacityType
@@ -137,7 +137,7 @@ spec:
           memory: 1Gi
           cpu: 1
         requests:
-          memory: 512M
+          memory: 512Mi
           cpu: 0.25
       upgrade: {{ network.upgrade | default(false) }}
       healthCheck: 
