@@ -91,9 +91,10 @@ spec:
       tlsStatus: true
       affinity:
         nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
               - key: eks.amazonaws.com/capacityType
                 operator: In
                 values:
