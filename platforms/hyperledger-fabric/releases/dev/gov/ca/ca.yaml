@@ -77,7 +77,7 @@ spec:
     image:
       alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
       ca: ghcr.io/hyperledger/bevel-fabric-ca:latest
-      pullSecret: ""
+      pullSecret: ""     
 
     server:
       removeCertsOnDelete: true
