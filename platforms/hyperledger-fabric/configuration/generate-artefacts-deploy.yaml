@@ -97,7 +97,6 @@
       include_role:
         name: "create/orderers"
       vars:
-        component: "{{ item.name | lower }}"   # ✅ REQUIRED
         build_path: "./build"
         namespace: "{{ item.name | lower}}-net"
         component_type: "{{ item.type | lower}}"
@@ -118,7 +117,6 @@
       include_role:
         name: "create/peers"
       vars:
-        component: "{{ item.name | lower }}"   # ✅ REQUIRED
         build_path: "./build"
         namespace: "{{ item.name | lower}}-net"
         component_type: "{{ item.type | lower}}"
