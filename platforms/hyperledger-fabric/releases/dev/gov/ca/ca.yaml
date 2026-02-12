@@ -29,7 +29,7 @@ spec:
                 - key: eks.amazonaws.com/capacityType
                   operator: In
                   values:
-                    - SPOT
+                    - SPOT 
 
     tolerations:
       - key: "eks.amazonaws.com/capacityType"
