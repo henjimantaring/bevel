@@ -17,7 +17,7 @@ spec:
         kind: GitRepository
         name: flux-prod
         namespace: flux-prod
-      chart: platforms/hyperledger-fabric/charts/fabric-ca-server. 
+      chart: platforms/hyperledger-fabric/charts/fabric-ca-server
 
   values:
     affinity:
