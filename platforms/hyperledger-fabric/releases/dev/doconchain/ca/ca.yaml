@@ -1,0 +1,88 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ca
+  namespace: doconchain-net
+  annotations:
+    fluxcd.io/automated: "false"
+
+spec:
+  interval: 1m
+  releaseName: ca
+
+  chart:
+    spec:
+      interval: 1m
+      sourceRef:
+        kind: GitRepository
+        name: flux-prod
+        namespace: flux-prod
+      chart: platforms/hyperledger-fabric/charts/fabric-ca-server
+
+  values:
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: eks.amazonaws.com/capacityType
+                  operator: In
+                  values:
+                    - ON_DEMAND
+
+    resources:
+      requests:
+        cpu: "200m"
+        memory: "256Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+    storage:
+      enabled: true
+      size: 512Mi
+      reclaimPolicy: "Delete"
+      volumeBindingMode: WaitForFirstConsumer
+      allowedTopologies:
+        enabled: false
+      createStorageClass: false
+      storageClass: gp3
+
+    global:
+      serviceAccountName: vault-auth
+      cluster:
+        provider: aws
+        cloudNativeServices: false
+        kubernetesUrl: https://85CE266964E8B1DB527EB8913F2615B3.gr7.ap-southeast-1.eks.amazonaws.com
+      vault:
+        type: hashicorp
+        network: fabric
+        address: http://vault.vault.svc:8200
+        authPath: proddoconchain
+        secretEngine: secretsv2
+        secretPrefix: "data/proddoconchain"
+        role: vault-role
+        tls: false
+      proxy:
+        provider: haproxy
+        externalUrlSuffix: org1proxy.hlf.doconchain.com
+
+    image:
+      alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
+      ca: ghcr.io/hyperledger/bevel-fabric-ca:latest
+      pullSecret: ""
+
+    server:
+      removeCertsOnDelete: true
+      tlsStatus: true
+      adminUsername: doconchain-admin
+      adminPassword: doconchain-adminpw
+      subject: /C=GB/ST=London/L=London/O=Orderer
+      clusterIpPort: 7054
+
+    labels:
+      service:
+        - example1: example2
+      pvc:
+      deployment:
