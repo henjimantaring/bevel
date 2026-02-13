@@ -86,6 +86,7 @@ spec:
                 operator: In
                 values:
                 - ON_DEMAND
+                - SPOT
       cliEnabled: True
       ordererAddress: orderer1.doconchain-net.org1proxy.hlf.doconchain.com:443
       builder: hyperledger/fabric-ccenv
@@ -113,11 +114,11 @@ spec:
           clusterIpPort: 9443    
       resources:
         limits:
-          memory: 1Gi
-          cpu: 1
+          memory: 768Mi
+          cpu: 500m
         requests:
-          memory: 512Mi
-          cpu: 0.25
+          memory: 256Mi
+          cpu: 100m
       upgrade: False
       healthCheck: 
         retries: 20

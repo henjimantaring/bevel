@@ -137,7 +137,7 @@ spec:
           memory: 1Gi
           cpu: 1
         requests:
-          memory: 512Mi
+          memory: 512M
           cpu: 0.25
       upgrade: {{ network.upgrade | default(false) }}
       healthCheck: 
