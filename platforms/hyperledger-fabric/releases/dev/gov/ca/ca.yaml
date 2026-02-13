@@ -4,7 +4,7 @@ metadata:
   name: ca
   namespace: gov-net
   annotations:
-    fluxcd.io/automated: "false" 
+    fluxcd.io/automated: "false"
 
 spec:
   interval: 1m
