@@ -39,10 +39,10 @@ spec:
 
     resources:
       requests:
-        cpu: "200m"
-        memory: "256Mi"
+        cpu: "100m"
+        memory: "192Mi"
       limits:
-        cpu: "500m"
+        cpu: "400m"
         memory: "512Mi"
 
     storage:

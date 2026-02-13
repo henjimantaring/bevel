@@ -138,7 +138,7 @@ spec:
           cpu: 1
         requests:
           memory: 512M
-          cpu: 0.25
+          cpu: 0.15
       upgrade: {{ network.upgrade | default(false) }}
       healthCheck: 
         retries: 20
