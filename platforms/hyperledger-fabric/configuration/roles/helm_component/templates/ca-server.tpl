@@ -29,24 +29,18 @@ spec:
                 - key: eks.amazonaws.com/capacityType
                   operator: In
                   values:
-                    - SPOT
-
-    tolerations:
-      - key: "eks.amazonaws.com/capacityType"
-        operator: "Equal"
-        value: "SPOT"
-        effect: "NoSchedule"
+                    - ON_DEMAND
 
     resources:
       requests:
-        cpu: "100m"
-        memory: "192Mi"
+        cpu: "200m"
+        memory: "256Mi"
       limits:
-        cpu: "400m"
+        cpu: "500m"
         memory: "512Mi"
 
     storage:
-      enabled: false
+      enabled: true
       size: 512Mi
       reclaimPolicy: "Delete"
       volumeBindingMode: WaitForFirstConsumer

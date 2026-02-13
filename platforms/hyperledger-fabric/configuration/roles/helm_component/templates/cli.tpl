@@ -26,13 +26,7 @@ spec:
                 - key: eks.amazonaws.com/capacityType
                   operator: In
                   values:
-                  - SPOT
-
-    tolerations:
-      - key: "eks.amazonaws.com/capacityType"
-        operator: "Equal"
-        value: "SPOT"
-        effect: "NoSchedule"
+                  - ON_DEMAND
 
     global:
       version: {{ network.version }}
