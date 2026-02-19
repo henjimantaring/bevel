@@ -39,7 +39,7 @@ spec:
         cpu: "500m"
         memory: "512Mi"
 
-    createStorageClass: false
+    createStorageClass: true
     storage:
       enabled: true
       size: 512Mi
