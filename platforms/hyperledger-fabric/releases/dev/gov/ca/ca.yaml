@@ -1,0 +1,85 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ca
+  namespace: gov-net
+  annotations:
+    fluxcd.io/automated: "false"
+
+spec:
+  interval: 1m
+  releaseName: ca
+
+  chart:
+    spec:
+      interval: 1m
+      sourceRef:
+        kind: GitRepository
+        name: flux-prod
+        namespace: flux-prod
+      chart: platforms/hyperledger-fabric/charts/fabric-ca-server
+
+  values:
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: eks.amazonaws.com/capacityType
+                  operator: In
+                  values:
+                    - ON_DEMAND
+
+    resources:
+      requests:
+        cpu: "200m"
+        memory: "256Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+
+
+    storage:
+      enabled: true
+      size: 512Mi
+      createStorageClass: false
+      storageClass: gp2
+
+    global:
+      serviceAccountName: vault-auth
+      cluster:
+        provider: aws
+        cloudNativeServices: false
+        kubernetesUrl: https://85CE266964E8B1DB527EB8913F2615B3.gr7.ap-southeast-1.eks.amazonaws.com
+      vault:
+        type: hashicorp
+        network: fabric
+        address: http://vault.vault.svc:8200
+        authPath: prodgov
+        secretEngine: secretsv2
+        secretPrefix: "data/prodgov"
+        role: vault-role
+        tls: false
+      proxy:
+        provider: haproxy
+        externalUrlSuffix: org2proxy.hlf.doconchain.com
+
+    image:
+      alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
+      ca: ghcr.io/hyperledger/bevel-fabric-ca:latest
+      pullSecret: ""
+
+    server:
+      removeCertsOnDelete: true
+      tlsStatus: true
+      adminUsername: gov-admin
+      adminPassword: gov-adminpw
+      subject: /C=GB/ST=London/L=London/O=Gov
+      clusterIpPort: 7054
+
+    labels:
+      service:
+        - example1: example2
+      pvc:
+      deployment:
