@@ -88,14 +88,17 @@ spec:
       localMspId: {{ name }}MSP
       tlsStatus: true
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: eks.amazonaws.com/capacityType
-                operator: In
-                values:
-                - ON_DEMAND
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - peer
+              topologyKey: kubernetes.io/hostname
       cliEnabled: {{ enabled_cli }}
       ordererAddress: {{ orderer.uri }}
       builder: hyperledger/fabric-ccenv

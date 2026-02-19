@@ -79,15 +79,26 @@ spec:
       localMspId: {{ org_name }}MSP
       tlsStatus: true
       keepAliveServerInterval: 10s
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: eks.amazonaws.com/capacityType
-              operator: In
-              values:
-              - ON_DEMAND
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: eks.amazonaws.com/capacityType
+                operator: In
+                values:
+                - ON_DEMAND
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - orderer
+              topologyKey: kubernetes.io/hostname
       serviceType: ClusterIP
       ports:
         grpc:
