@@ -39,7 +39,7 @@ spec:
         cpu: "500m"
         memory: "512Mi"
 
-    createStorageClass: false
+
     storage:
       enabled: true
       size: 512Mi
@@ -47,6 +47,7 @@ spec:
       volumeBindingMode: WaitForFirstConsumer
       allowedTopologies:
         enabled: false
+      createStorageClass: false
       storageClass: gp3
 
     global:
