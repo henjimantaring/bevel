@@ -40,10 +40,8 @@ spec:
       enabled: {{ sc_enabled }}
       peer: 512Mi
       couchdb: 512Mi
-      reclaimPolicy: "Delete" 
-      volumeBindingMode: Immediate 
-      allowedTopologies:
-        enabled: false
+      createStorageClass: false
+      storageClass: gp2
 
     certs:
       generateCertificates: true
@@ -127,7 +125,7 @@ spec:
         couchdb:
           clusterIpPort: {{ peer.couchdb.port }}
 {% if peer.couchdb.nodePort is defined %}
-          nodepnodePortort: {{ peer.couchdb.nodePort }}
+          nodePort: {{ peer.couchdb.nodePort }}
 {% endif %}
         metrics:
           enabled: {{ peer.metrics.enabled | default(false) }}
