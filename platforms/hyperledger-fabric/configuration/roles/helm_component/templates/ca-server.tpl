@@ -33,15 +33,15 @@ spec:
 
     resources:
       requests:
-        cpu: "100m"
-        memory: "128Mi"
-      limits:
-        cpu: "300m"
+        cpu: "200m"
         memory: "256Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
 
 
     storage:
-      enabled: false
+      enabled: true
       size: 512Mi
       createStorageClass: false
       storageClass: gp2
