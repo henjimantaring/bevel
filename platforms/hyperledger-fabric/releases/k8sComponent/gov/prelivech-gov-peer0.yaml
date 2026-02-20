@@ -29,7 +29,7 @@ peer:
   localMspId: govMSP
   logLevel: debug
   tlsStatus: true
-  channelName: prodch  
+  channelName: prelivech  
   ordererAddress: orderer1.doconchain-net.org1proxy.hlf.doconchain.com:443
   addPeerValue: false
   addnewOrgValue: false
