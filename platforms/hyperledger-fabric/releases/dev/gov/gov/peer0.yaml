@@ -58,7 +58,7 @@ spec:
         - {'user': None, 'identity': 'user1', 'attributes': [{'key': 'hf.Revoker', 'value': 'true'}]}
 
       settings:
-        createConfigMaps: True
+        createConfigMaps: False
         refreshCertValue: false
         addPeerValue: false
         removeCertsOnDelete: true
@@ -114,11 +114,11 @@ spec:
           clusterIpPort: 9443    
       resources:
         limits:
-          memory: 1Gi
-          cpu: 1
+          memory: 512Mi
+          cpu: 0.5
         requests:
-          memory: 512M
-          cpu: 0.25
+          memory: 256Mi
+          cpu: 0.1
       upgrade: False
       healthCheck: 
         retries: 20
