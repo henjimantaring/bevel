@@ -41,7 +41,7 @@ spec:
 
 
     storage:
-      enabled: true
+      enabled: false
       size: 512Mi
       createStorageClass: false
       storageClass: gp2
