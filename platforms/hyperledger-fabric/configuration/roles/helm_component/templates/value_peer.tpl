@@ -114,6 +114,8 @@ spec:
           ordererOUIdentifier: orderer
       serviceType: ClusterIP 
       loadBalancerType: ""
+      metrics:
+        provider: prometheus
       ports:
         grpc:
           clusterIpPort: {{ peer.grpc.port }}

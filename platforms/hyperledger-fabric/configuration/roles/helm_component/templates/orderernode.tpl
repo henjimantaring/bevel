@@ -100,6 +100,8 @@ spec:
                   - orderer
               topologyKey: kubernetes.io/hostname
       serviceType: ClusterIP
+      metrics:
+        provider: prometheus
       ports:
         grpc:
           clusterIpPort: {{ orderer.grpc.port }}
