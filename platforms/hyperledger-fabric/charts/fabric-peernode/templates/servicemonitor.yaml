@@ -7,7 +7,7 @@ metadata:
     app: {{ .Release.Name }}
     app.kubernetes.io/name: {{ .Release.Name}}
     app.kubernetes.io/component: fabric
-    app.kubernetes.io/part-of: {{ include "fabric-orderernode.fullname" . }}
+    app.kubernetes.io/part-of: {{ include "fabric-peernode.fullname" . }}
     app.kubernetes.io/namespace: {{ .Release.Namespace }}
     app.kubernetes.io/release: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
