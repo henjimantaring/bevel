@@ -87,6 +87,9 @@ spec:
       logLevel: info
       localMspId: {{ name }}MSP
       tlsStatus: true
+      env:
+        - name: CORE_METRICS_PROVIDER
+          value: prometheus
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
