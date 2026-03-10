@@ -87,7 +87,7 @@ spec:
       logLevel: info
       localMspId: {{ name }}MSP
       tlsStatus: true
-      env:
+      extraEnv:
         - name: CORE_METRICS_PROVIDER
           value: prometheus
       affinity:
