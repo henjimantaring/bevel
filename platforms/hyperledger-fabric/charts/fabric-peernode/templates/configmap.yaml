@@ -49,6 +49,7 @@ data:
   CORE_PEER_GOSSIP_SKIPHANDSHAKE: "true"
   CORE_CHAINCODE_BUILDER: "external"
   CORE_OPERATIONS_LISTENADDRESS: 0.0.0.0:9443
+  CORE_METRICS_PROVIDER: prometheus
 ---
 apiVersion: v1
 kind: ConfigMap
