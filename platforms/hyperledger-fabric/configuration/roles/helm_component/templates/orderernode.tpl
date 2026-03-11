@@ -79,6 +79,9 @@ spec:
       localMspId: {{ org_name }}MSP
       tlsStatus: true
       keepAliveServerInterval: 10s
+      extraEnv:
+        - name: CORE_METRICS_PROVIDER
+          value: prometheus
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
