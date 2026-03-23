@@ -4,7 +4,7 @@ global:
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
 {% if cloud_provider == "aws" %}
-provisioner: kubernetes.io/aws-ebs
+provisioner: ebs.csi.aws.com
 {% elif cloud_provider == "gcp" %}
 provisioner: pd.csi.storage.gke.io
 {% elif cloud_provider == "minikube" %}
