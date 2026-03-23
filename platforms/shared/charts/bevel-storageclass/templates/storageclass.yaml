@@ -11,6 +11,7 @@ metadata:
 reclaimPolicy: "{{ .Values.reclaimPolicy }}"
 volumeBindingMode: "{{ .Values.volumeBindingMode }}"
 {{- if .Values.provisioner }}
+allowVolumeExpansion: {{ .Values.allowVolumeExpansion | default true }}
 provisioner: "{{ .Values.provisioner }}"
 {{- else }}
 {{ include "provisioner" . }}
