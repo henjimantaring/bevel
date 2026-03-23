@@ -10,8 +10,8 @@ metadata:
   name: {{ include "bevel-storageclass.fullname" . }}
 reclaimPolicy: "{{ .Values.reclaimPolicy }}"
 volumeBindingMode: "{{ .Values.volumeBindingMode }}"
-{{- if .Values.provisioner }}
 allowVolumeExpansion: {{ .Values.allowVolumeExpansion | default true }}
+{{- if .Values.provisioner }}
 provisioner: "{{ .Values.provisioner }}"
 {{- else }}
 {{ include "provisioner" . }}
