@@ -116,11 +116,11 @@ spec:
           clusterIpPort: {{ orderer.metrics.port | default(9443) }}
       resources:
         limits:
-          memory: 384Mi
-          cpu: 0.5
+          memory: 512M
+          cpu: 1
         requests:
-          memory: 256Mi
-          cpu: 0.1
+          memory: 512M
+          cpu: 0.25
 
 {% if orderer.consensus == 'kafka' %}
     kafka:
