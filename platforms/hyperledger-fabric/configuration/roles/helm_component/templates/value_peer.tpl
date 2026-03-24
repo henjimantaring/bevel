@@ -140,11 +140,11 @@ spec:
           clusterIpPort: {{ peer.metrics.port | default(9443) }}    
       resources:
         limits:
-          memory: 1Gi
-          cpu: 1
+          memory: 512Mi
+          cpu: 0.5
         requests:
-          memory: 512M
-          cpu: 0.25
+          memory: 256Mi
+          cpu: 0.1
       upgrade: {{ network.upgrade | default(false) }}
       healthCheck: 
         retries: 20
