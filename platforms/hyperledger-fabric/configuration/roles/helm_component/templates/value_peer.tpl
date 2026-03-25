@@ -41,7 +41,7 @@ spec:
       peer: 512Mi
       couchdb: 512Mi
       createStorageClass: false
-      storageClass: gp2
+      volumeBindingMode: WaitForFirstConsumer
 
     certs:
       generateCertificates: true

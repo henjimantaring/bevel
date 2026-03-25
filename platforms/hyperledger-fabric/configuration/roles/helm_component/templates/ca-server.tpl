@@ -44,7 +44,7 @@ spec:
       enabled: false
       size: 512Mi
       createStorageClass: false
-      storageClass: gp2
+      volumeBindingMode: WaitForFirstConsumer
 
     global:
       serviceAccountName: vault-auth
