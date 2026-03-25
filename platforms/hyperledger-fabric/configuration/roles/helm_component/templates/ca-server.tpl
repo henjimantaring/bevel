@@ -33,15 +33,15 @@ spec:
 
     resources:
       requests:
-        cpu: "200m"
-        memory: "256Mi"
+        cpu: "100m"
+        memory: "128Mi"
       limits:
-        cpu: "500m"
-        memory: "512Mi"
+        cpu: "300m"
+        memory: "256Mi"
 
 
     storage:
-      enabled: true
+      enabled: false
       size: 512Mi
       createStorageClass: false
       volumeBindingMode: WaitForFirstConsumer
