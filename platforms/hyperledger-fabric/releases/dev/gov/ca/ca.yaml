@@ -66,9 +66,9 @@ spec:
         externalUrlSuffix: org2proxy.hlf.doconchain.com
 
     image:
-      alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
-      ca: ghcr.io/hyperledger/bevel-fabric-ca:latest
-      pullSecret: ""
+      alpineUtils: ghcr.io/henjimantaring/bevel-alpine:latest
+      ca: ghcr.io/henjimantaring/bevel-fabric-ca:latest
+      pullSecret: regcred
 
     server:
       removeCertsOnDelete: true
