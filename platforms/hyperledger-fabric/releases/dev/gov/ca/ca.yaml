@@ -1,0 +1,85 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ca
+  namespace: gov-net
+  annotations:
+    fluxcd.io/automated: "false"
+
+spec:
+  interval: 1m
+  releaseName: ca
+
+  chart:
+    spec:
+      interval: 1m
+      sourceRef:
+        kind: GitRepository
+        name: flux-local
+        namespace: flux-local
+      chart: platforms/hyperledger-fabric/charts/fabric-ca-server
+
+  values:
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: eks.amazonaws.com/capacityType
+                  operator: In
+                  values:
+                    - ON_DEMAND
+
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "300m"
+        memory: "256Mi"
+
+
+    storage:
+      enabled: true
+      size: 512Mi
+      createStorageClass: false
+      volumeBindingMode: WaitForFirstConsumer
+
+    global:
+      serviceAccountName: vault-auth
+      cluster:
+        provider: minikube
+        cloudNativeServices: false
+        kubernetesUrl: http://host.docker.internal:18001
+      vault:
+        type: hashicorp
+        network: fabric
+        address: http://192.168.254.109:8200/
+        authPath: localgov
+        secretEngine: localsecrets
+        secretPrefix: "data/localgov"
+        role: vault-role
+        tls: false
+      proxy:
+        provider: none
+        externalUrlSuffix: org2proxy.hlf.doconchain.com
+
+    image:
+      alpineUtils: ghcr.io/henjimantaring/bevel-alpine:arm64
+      ca: ghcr.io/henjimantaring/bevel-fabric-ca:latest
+      pullSecret: regcred
+
+    server:
+      removeCertsOnDelete: true
+      tlsStatus: true
+      adminUsername: gov-admin
+      adminPassword: gov-adminpw
+      subject: /C=GB/ST=London/L=London/O=Gov
+      clusterIpPort: 7054
+
+    labels:
+      service:
+        - example1: example2
+      pvc:
+      deployment:
