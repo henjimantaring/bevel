@@ -8,6 +8,12 @@
 # This role generates value files for various k8 components
 #############################################################################################
 
+
+- name: Ensure component is defined
+  set_fact:
+    component: "{{ org.name | lower }}"
+  when: component is not defined
+
 # Ensure that the directory exists for each entity, if not, it creates them
 - name: Ensure {{ release_dir }} dir exists
   file:

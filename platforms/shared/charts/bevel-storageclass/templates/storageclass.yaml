@@ -8,8 +8,11 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: {{ include "bevel-storageclass.fullname" . }}
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "{{ .Values.isDefault | default false }}"
 reclaimPolicy: "{{ .Values.reclaimPolicy }}"
-volumeBindingMode: "{{ .Values.volumeBindingMode }}"
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
 {{- if .Values.provisioner }}
 provisioner: "{{ .Values.provisioner }}"
 {{- else }}

@@ -12,6 +12,6 @@ appPolicies:
     policy:
       type: 3
       value:
-        rule: MAJORITY
+        rule: ANY
         sub_policy: Endorsement
     version: '0'

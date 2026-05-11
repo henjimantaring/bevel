@@ -40,7 +40,7 @@ Application: &ApplicationDefaults
   Policies:
     LifecycleEndorsement:
         Type: ImplicitMeta
-        Rule: "MAJORITY Endorsement"
+        Rule: "ANY Endorsement"
     Endorsement:
         Type: ImplicitMeta
         Rule: "MAJORITY Endorsement"

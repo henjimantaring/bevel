@@ -5,9 +5,11 @@ metadata:
   namespace: {{ component_ns }}
   annotations:
     fluxcd.io/automated: "false"
+
 spec:
   interval: 1m
   releaseName: {{ component_name | replace('_','-') }}
+
   chart:
     spec:
       interval: 1m
@@ -15,8 +17,35 @@ spec:
         kind: GitRepository
         name: flux-{{ network.env.type }}
         namespace: flux-{{ network.env.type }}
-      chart: {{ charts_dir }}/fabric-ca-server   
+      chart: {{ charts_dir }}/fabric-ca-server
+
   values:
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: eks.amazonaws.com/capacityType
+                  operator: In
+                  values:
+                    - ON_DEMAND
+
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "300m"
+        memory: "256Mi"
+
+
+    storage:
+      enabled: true
+      size: 512Mi
+      createStorageClass: false
+      volumeBindingMode: WaitForFirstConsumer
+
     global:
       serviceAccountName: vault-auth
       cluster:
@@ -36,17 +65,10 @@ spec:
         provider: {{ network.env.proxy | quote }}
         externalUrlSuffix: {{ org.external_url_suffix }}
 
-    storage:
-      size: 512Mi
-      reclaimPolicy: "Delete"
-      volumeBindingMode: Immediate
-      allowedTopologies:
-        enabled: false
-
     image:
       alpineUtils: {{ docker_url }}/bevel-alpine:{{ bevel_alpine_version }}
       ca: {{ docker_url }}/{{ ca_image[network.version] }}
-{% if network.docker.username is defined and network.docker.password is defined  %}
+{% if network.docker.username is defined and network.docker.password is defined %}
       pullSecret: regcred
 {% else %}
       pullSecret: ""
@@ -57,7 +79,7 @@ spec:
       tlsStatus: true
       adminUsername: {{ component }}-admin
       adminPassword: {{ component }}-adminpw
-      subject: "{{ subject | quote }}"
+      subject: {{ subject }}
 {% if component_services.ca.configpath is defined %}
       configPath: conf/fabric-ca-server-config-{{ component }}.yaml
 {% endif %}

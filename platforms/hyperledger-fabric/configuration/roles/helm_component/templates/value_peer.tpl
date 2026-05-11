@@ -40,10 +40,8 @@ spec:
       enabled: {{ sc_enabled }}
       peer: 512Mi
       couchdb: 512Mi
-      reclaimPolicy: "Delete" 
-      volumeBindingMode: Immediate 
-      allowedTopologies:
-        enabled: false
+      createStorageClass: false
+      volumeBindingMode: WaitForFirstConsumer
 
     certs:
       generateCertificates: true
@@ -89,6 +87,21 @@ spec:
       logLevel: info
       localMspId: {{ name }}MSP
       tlsStatus: true
+      extraEnv:
+        - name: CORE_METRICS_PROVIDER
+          value: prometheus
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - peer
+              topologyKey: kubernetes.io/hostname
       cliEnabled: {{ enabled_cli }}
       ordererAddress: {{ orderer.uri }}
       builder: hyperledger/fabric-ccenv
@@ -104,6 +117,8 @@ spec:
           ordererOUIdentifier: orderer
       serviceType: ClusterIP 
       loadBalancerType: ""
+      metrics:
+        provider: prometheus
       ports:
         grpc:
           clusterIpPort: {{ peer.grpc.port }}
@@ -118,18 +133,18 @@ spec:
         couchdb:
           clusterIpPort: {{ peer.couchdb.port }}
 {% if peer.couchdb.nodePort is defined %}
-          nodepnodePortort: {{ peer.couchdb.nodePort }}
+          nodePort: {{ peer.couchdb.nodePort }}
 {% endif %}
         metrics:
           enabled: {{ peer.metrics.enabled | default(false) }}
           clusterIpPort: {{ peer.metrics.port | default(9443) }}    
       resources:
         limits:
-          memory: 1Gi
-          cpu: 1
+          memory: 512Mi
+          cpu: 0.5
         requests:
-          memory: 512M
-          cpu: 0.25
+          memory: 256Mi
+          cpu: 0.1
       upgrade: {{ network.upgrade | default(false) }}
       healthCheck: 
         retries: 20

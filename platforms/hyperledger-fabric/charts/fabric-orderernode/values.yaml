@@ -93,6 +93,15 @@ image:
   pullSecret: 
 
 orderer:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: eks.amazonaws.com/capacityType
+            operator: In
+            values:
+            - ON_DEMAND
   #Provide the name of the consensus. Currently support raft and kafka
   #Eg. consensus: raft
   consensus: raft

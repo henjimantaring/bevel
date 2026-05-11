@@ -34,6 +34,10 @@ spec:
         - name: {{ $.Values.vault.imagesecretname }}
       {{- end }}
       volumes:
+      - name: dockersock
+        emptyDir: {}
+      - name: dind-graph
+        emptyDir: {}
       {{ if .Values.vault.tls  }}
       - name: vaultca
         secret:
@@ -64,8 +68,6 @@ spec:
           value: {{ $.Values.vault.role }}
         - name: VAULT_PEER_SECRET_PREFIX
           value: "{{ $.Values.vault.adminsecretprefix }}"
-        - name: VAULT_ORDERER_SECRET_PREFIX
-          value: "{{ $.Values.vault.orderersecretprefix }}"
         - name: MOUNT_PATH
           value: /secret
         - name: NETWORK_VERSION
@@ -81,16 +83,8 @@ spec:
           # Calling a function to retrieve the vault token.
           vaultBevelFunc "init"
 
-          echo "Getting Orderer TLS certificates from Vault."
-          vaultBevelFunc "readJson" "${VAULT_ORDERER_SECRET_PREFIX}/tls"
-
-          TLS_CA_CERT=$(echo ${VAULT_SECRET} | jq -r '.["ca.crt"]')
-          OUTPUT_PATH="${MOUNT_PATH}/orderer/tls"
-          mkdir -p ${OUTPUT_PATH}
-          echo "${TLS_CA_CERT}" >> ${OUTPUT_PATH}/ca.crt
-
           echo "Getting MSP certificates from Vault."
-          vaultBevelFunc "readJson" "${VAULT_PEER_SECRET_PREFIX}/msp"
+          vaultBevelFunc "readJson" "${VAULT_PEER_SECRET_PREFIX}-msp"
 
           ADMINCERT=$(echo ${VAULT_SECRET} | jq -r '.["admincerts"]')
           CACERTS=$(echo ${VAULT_SECRET} | jq -r '.["cacerts"]')
@@ -115,6 +109,7 @@ spec:
           vault_secret_key={{ $.Values.vault.secretgitprivatekey }}
 
           # Calling a function to retrieve secrets from Vault only if they exist.
+          echo "readJson" "${vault_secret_key}"
           vaultBevelFunc "readJson" "${vault_secret_key}"
           
           VALUE_OF_SECRET=$(echo ${VAULT_SECRET} | jq -r ".[\"git_password\"]")         
@@ -315,10 +310,6 @@ spec:
           value: "{{ $.Values.peer.tlsstatus }}"
         - name: CORE_PEER_TLS_ROOTCERT_FILE
           value: /opt/gopath/src/github.com/hyperledger/fabric/crypto/admin/msp/tlscacerts/tlsca.crt
-        - name: ORDERER_CA
-          value: /opt/gopath/src/github.com/hyperledger/fabric/crypto/orderer/tls/ca.crt
-        - name: ORDERER_URL
-          value: {{ $.Values.orderer.address }}
         - name: CORE_PEER_MSPCONFIGPATH
           value: /opt/gopath/src/github.com/hyperledger/fabric/crypto/admin/msp
         - name: CHAINCODE_NAME
@@ -334,6 +325,10 @@ spec:
         - name: CC_RUNTIME_LANGUAGE
           value: "{{ $.Values.chaincode.lang }}"
         volumeMounts:
+        - name: dockersock
+          mountPath: /host/var/run/docker.sock
+        - name: dind-graph
+          mountPath: /var/lib/docker          # optional, if installcontainer needs it
         - name: certificates
           mountPath: /opt/gopath/src/github.com/hyperledger/fabric/crypto
           readOnly: true

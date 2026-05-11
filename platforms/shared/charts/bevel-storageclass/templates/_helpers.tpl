@@ -29,7 +29,7 @@ Create chart name and version as used by the chart label.
 
 {{- define "provisioner" -}}
 {{- if eq .Values.global.cluster.provider "aws" }}
-provisioner: kubernetes.io/aws-ebs
+provisioner: ebs.csi.aws.com
 {{- else if eq .Values.global.cluster.provider "gcp" }}
 provisioner: pd.csi.storage.gke.io
 {{- else if eq .Values.global.cluster.provider "minikube" }}

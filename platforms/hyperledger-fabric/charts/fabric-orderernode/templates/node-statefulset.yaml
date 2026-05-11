@@ -45,7 +45,12 @@ spec:
         app.kubernetes.io/release: {{ .Release.Name }}
         app.kubernetes.io/managed-by: helm
         {{- include "labels.deployment" . | nindent 8 }}
-    spec:    
+    spec:
+      {{- with .Values.orderer.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }} 
+ 
       serviceAccountName: {{ .Values.global.serviceAccountName }}
       {{- if .Values.image.pullSecret }}
       imagePullSecrets:

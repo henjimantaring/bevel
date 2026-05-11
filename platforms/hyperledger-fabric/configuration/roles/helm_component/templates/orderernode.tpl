@@ -39,7 +39,7 @@ spec:
     storage:
       size: 512Mi
       reclaimPolicy: "Delete" 
-      volumeBindingMode: 
+      volumeBindingMode: WaitForFirstConsumer
       allowedTopologies:
         enabled: false
 
@@ -79,7 +79,32 @@ spec:
       localMspId: {{ org_name }}MSP
       tlsStatus: true
       keepAliveServerInterval: 10s
+      extraEnv:
+        - name: CORE_METRICS_PROVIDER
+          value: prometheus
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: eks.amazonaws.com/capacityType
+                operator: In
+                values:
+                - ON_DEMAND
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - orderer
+              topologyKey: kubernetes.io/hostname
       serviceType: ClusterIP
+      metrics:
+        provider: prometheus
       ports:
         grpc:
           clusterIpPort: {{ orderer.grpc.port }}
@@ -91,11 +116,11 @@ spec:
           clusterIpPort: {{ orderer.metrics.port | default(9443) }}
       resources:
         limits:
-          memory: 512M
-          cpu: 1
+          memory: 384Mi
+          cpu: 0.5
         requests:
-          memory: 512M
-          cpu: 0.25
+          memory: 256Mi
+          cpu: 0.1
 
 {% if orderer.consensus == 'kafka' %}
     kafka:

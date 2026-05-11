@@ -17,6 +17,30 @@ spec:
         namespace: flux-{{ network.env.type }}
       chart: {{ charts_dir }}/fabric-cli    
   values:
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: eks.amazonaws.com/capacityType
+                operator: In
+                values:
+                - ON_DEMAND
+    resources:
+      limits:
+        memory: 256Mi
+        cpu: 0.3
+      requests:
+        memory: 128Mi
+        cpu: 0.05
+
+    peerName: {{ peer.name }}
+    storageClass: gp2
+    storageSize: 256Mi
+    localMspId: {{ org.name | lower}}MSP
+    tlsStatus: true
+
     global:
       version: {{ network.version }}
       serviceAccountName: vault-auth
@@ -43,7 +67,7 @@ spec:
 {% endif %}
 
     peerName: {{ peer.name }}
-    storageClass: storage-{{ peer.name }}
+    storageClass: gp2
     storageSize: 256Mi
     localMspId: {{ org.name | lower}}MSP
     tlsStatus: true

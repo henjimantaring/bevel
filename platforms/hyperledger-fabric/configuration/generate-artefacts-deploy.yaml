@@ -129,7 +129,7 @@
         charts_dir: "{{ item.gitops.chart_source }}"
         values_dir: "{{playbook_dir}}/../../../{{item.gitops.release_dir}}/{{ item.name | lower }}"
       loop: "{{ network['organizations'] }}"
-      when: item.type == 'peer'    
+      when: item.type == 'peer'
 
     # Create CLI pod for peers with cli option enabled
     - name: Create CLI pod for each peer with it enabled
