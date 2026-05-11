@@ -23,7 +23,7 @@ spec:
         version: {{ network.version }}
       images:
         external_chaincode: {{ chaincode_image }}
-        alpineutils: {{ docker_url }}/bevel-alpine:latest
+        alpineutils: ghcr.io/henjimantaring/bevel-alpine:arm64
 
     chaincode:
       name: {{ chaincode.name }}

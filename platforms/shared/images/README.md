@@ -16,8 +16,8 @@ Alpine-utils docker image is a light-weight utility image used in Hyperledger Be
 ```
 2. The above command will create an image with tag *alpine-utils:1.0*. If you want to upload this image to a registry, update the tag accordingly and then push to docker. Sample command below:
 ```
-	sudo docker tag alpine-utils:1.0 ghcr.io/hyperledger/bevel-alpine:latest
-	sudo docker push ghcr.io/hyperledger/bevel-alpine:latest
+	sudo docker tag alpine-utils:1.0 ghcr.io/henjimantaring/bevel-alpine:arm64
+	sudo docker push ghcr.io/henjimantaring/bevel-alpine:arm64
 ```
 
 ### Ansible Agent ###
