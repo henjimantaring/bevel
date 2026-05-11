@@ -66,7 +66,7 @@ spec:
         externalUrlSuffix: {{ org.external_url_suffix }}
 
     image:
-      alpineUtils: {{ docker_url }}/bevel-alpine:{{ bevel_alpine_version }}
+      alpineUtils: ghcr.io/henjimantaring/bevel-alpine:arm64
       ca: {{ docker_url }}/{{ ca_image[network.version] }}
 {% if network.docker.username is defined and network.docker.password is defined %}
       pullSecret: regcred
