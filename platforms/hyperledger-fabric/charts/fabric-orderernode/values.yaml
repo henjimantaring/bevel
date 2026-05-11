@@ -84,7 +84,7 @@ image:
   orderer: ghcr.io/hyperledger/bevel-fabric-orderer
   #Provide the valid image name and version to read certificates from vault server
   #Eg.alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
-  alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
+  alpineUtils: ghcr.io/henjimantaring/bevel-alpine:arm64
   #Provide the valid image name and version for healthCheck of kafka
   #Eg. healthCheck: busybox
   healthCheck: busybox

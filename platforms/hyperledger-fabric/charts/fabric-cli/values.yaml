@@ -43,7 +43,7 @@ image:
   fabricTools: ghcr.io/hyperledger/bevel-fabric-tools
   #Provide the valid image name and version to read certificates from vault server
   #Eg.alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
-  alpineUtils: ghcr.io/hyperledger/bevel-alpine:latest
+  alpineUtils: ghcr.io/henjimantaring/bevel-alpine:arm64
   #Provide the secret to use if private repository
   #Eg. pullSecret: regcred
   pullSecret:
